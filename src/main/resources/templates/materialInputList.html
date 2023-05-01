@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="/static/js/jquery-easyui-1.3.0/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/js/jquery-easyui-1.3.0/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/static/js/jquery-easyui-1.3.0/easyloader.js">
+    <link href="/static/style/style.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="/static/js/jquery-easyui-1.3.0/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-easyui-1.3.0/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-easyui-1.3.0/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/static/js/opentabs.js"></script>
+    <script type="text/javascript" src="/static/js/dh.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/js/jquery-autocomplete/jquery.autocomplete.css">
+    <script type="text/javascript" src="/static/js/jquery-autocomplete/jquery.autocomplete.min.js"></script>
+    <script>
+        function materialImport(){
+            location.href = "materialInput";
+        }
+    </script>
+</head>
+<body>
+<table width="100%" border="0">
+    <tr>
+        <td>
+            <a class="easyui-linkbutton" plain="true" icon="icon-add" href="javascript:void(0);" onclick="materialImport()">Import</a>
+            <a class="easyui-linkbutton" plain="true" icon="icon-undo" href="javascript:void(0);" onclick="materialExport()">Export</a>
+            <a class="easyui-linkbutton" plain="true" icon="icon-edit" href="javascript:void(0);" onclick="verify()">Validate</a>
+            <a class="easyui-linkbutton" plain="true" icon="icon-edit" href="javascript:void(0);" onclick="inStorage()">Enter Storage</a>
+            <a class="easyui-linkbutton" plain="true" icon="icon-cut" href="javascript:void(0);" onclick="del()">Delete</a>
+        </td>
+        <td align="right">
+            <form id="form1" modelAttribute="enrollment" action="/materialInput/list" method="post">
+                Provider: <select  id="supplierId" name="supplierId">
+                <option value="">None</option>
+<!--                <option th:each="supplier:${supplierList}"-->
+<!--                        th:value="${supplier.supplierId}"-->
+<!--                        th:text="${supplier.supplierName}"-->
+<!--                        th:selected="${supplier.supplierId == materialInputForm.supplierId}"-->
+<!--                ></option>-->
+            </select>
+<!--                物料名称: <input type="text" id="materialName" th:value="${materialInputForm.materialName}" name="materialName" style="width:110px;">-->
+<!--                生产批号: <input type="text" id="batchNo"  th:value="${materialInputForm.batchNo}" name="batchNo" style="width:110px;">-->
+                Status：
+
+            </form>
+        </td>
+    </tr>
+</table>
+</div>
+
+<table class="easyui-datagrid" id="dgitem" pagination="true" style="height:550px;width: auto;" singleSelect="false">
+    <thead>
+    <tr>
+        <th width="50" align="center" checkbox="true" field="id" >Choose</th>
+        <th width="150" align="center" field="supplierName">Provider</th>
+        <th width="120" align="center" field="oprDate">Delivery Date</th>
+        <th width="100" align="center" field="storageName">Storage</th>
+        <th width="60" align="center" field="materialCode">Material ID</th>
+        <th width="100" align="center" field="materialName">Material Name</th>
+        <th width="60" align="center" field="style">Models</th>
+        <th width="60" align="center" field="unitName">Unit</th>
+        <th width="90" align="center" field="orderId">Order No</th>
+        <th width="130" align="center" field="batchNo">Production No</th>
+        <th width="60" align="center" field="orderCnt">Count</th>
+        <th width="80" align="center" field="status">Status</th>
+        <th width="150" align="center" field="orderNo">Entry No</th>
+        <th width="80" align="center" field="userName">Operator</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+</body>
+</html>
