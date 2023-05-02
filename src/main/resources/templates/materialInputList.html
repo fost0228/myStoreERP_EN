@@ -1,19 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" type="text/css" href="/static/js/jquery-easyui-1.3.0/themes/default/easyui.css">
-    <link rel="stylesheet" type="text/css" href="/static/js/jquery-easyui-1.3.0/themes/icon.css">
-    <link rel="stylesheet" type="text/css" href="/static/js/jquery-easyui-1.3.0/easyloader.js">
-    <link href="/static/style/style.css" rel="stylesheet" type="text/css">
-    <script type="text/javascript" src="/static/js/jquery-easyui-1.3.0/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="/static/js/jquery-easyui-1.3.0/jquery.easyui.min.js"></script>
-    <script type="text/javascript" src="/static/js/jquery-easyui-1.3.0/locale/easyui-lang-zh_CN.js"></script>
-    <script type="text/javascript" src="/static/js/opentabs.js"></script>
-    <script type="text/javascript" src="/static/js/dh.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/js/jquery-autocomplete/jquery.autocomplete.css">
-    <script type="text/javascript" src="/static/js/jquery-autocomplete/jquery.autocomplete.min.js"></script>
+    <th:block th:include="common.html :: source"></th:block>
     <script>
         function materialImport(){
             location.href = "materialInput";
