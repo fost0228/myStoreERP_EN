@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <th:block th:include="common.html :: source"></th:block>
+<!--    <link rel="shortcut icon" href="../resources/favicon.ico" th:href="@{/static/favicon.ico}"/>-->
     <script>
         function materialImport(){
             location.href = "materialInput";
@@ -44,7 +45,7 @@
     <thead>
     <tr>
         <th width="50" align="center" checkbox="true" field="id" >Choose</th>
-        <th width="150" align="center" field="supplierName">Provider</th>
+        <th width="150" align="center" field="supplierName">Supplier</th>
         <th width="120" align="center" field="oprDate">Delivery Date</th>
         <th width="100" align="center" field="storageName">Storage</th>
         <th width="60" align="center" field="materialCode">Material ID</th>
@@ -60,7 +61,25 @@
     </tr>
     </thead>
     <tbody>
-
+        <tr th:each="materialInput:${list}">
+            <td th:text="${materialInput.materialInputId}"></td>
+            <td th:text="${materialInput.supplierName}"></td>
+            <td th:text="${materialInput.orderDate}"></td>
+            <td th:text="${materialInput.storageName}"></td>
+            <td th:text="${materialInput.materialCode}"></td>
+            <td th:text="${materialInput.materialName}"></td>
+            <td th:text="${materialInput.style}"></td>
+            <td th:text="${materialInput.unitName}"></td>
+            <td th:text="${materialInput.orderId}"></td>
+            <td th:text="${materialInput.batchNo}"></td>
+            <td th:text="${materialInput.orderCount}"></td>
+<!--                    <td th:text="${materialInput.status}"></td>-->
+            <td th:if="${materialInput.status == 0}">Not Validated</td>
+            <td th:if="${materialInput.status == 1}">Validated</td>
+            <td th:if="${materialInput.status == 2}">In Storage</td>
+            <td th:text="${materialInput.orderNo}"></td>
+            <td th:text="${materialInput.userName}"></td>
+        </tr>
     </tbody>
 </table>
 </body>
