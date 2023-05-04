@@ -4,6 +4,7 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.southwind.entity.MaterialInput;
 import com.southwind.mapper.MaterialInputMapper;
 import com.southwind.mapper.MaterialMapper;
@@ -155,7 +156,13 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
 
     @Override
     public PageObject materialInputList(PageObject pageObject) {
-
-        return null;
+        Page<MaterialInput> page = new Page<>(pageObject.getCurrent(), pageObject.getSize());
+        Page<MaterialInput> resultPage = this.materialInputMapper.selectPage(page, null);
+        PageObject result = new PageObject();
+        result.setCurrent(resultPage.getCurrent());
+        result.setSize(resultPage.getSize());
+        result.setTotal(resultPage.getTotal());
+        result.setData(resultPage.getRecords());
+        return result;
     }
 }

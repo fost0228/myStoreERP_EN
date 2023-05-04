@@ -1,7 +1,9 @@
 package com.southwind.controller;
 
 
+import com.southwind.form.MaterialInputSearchForm;
 import com.southwind.service.MaterialInputService;
+import com.southwind.service.SupplierService;
 import com.southwind.util.ImportResult;
 import com.southwind.util.PageObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ import java.io.IOException;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author Forest
@@ -31,6 +33,9 @@ public class MaterialInputController {
     @Autowired
     private MaterialInputService materialInputService;
 
+    @Autowired
+    private SupplierService supplierService;
+
     @PostMapping("/import")
     public String materialInputImport(@RequestParam("file") MultipartFile file, Model model) throws Exception {
         ImportResult result = this.materialInputService.excelImport(file.getInputStream());
@@ -40,10 +45,13 @@ public class MaterialInputController {
     }
 
 
-    @GetMapping("/list")
-    public String list(Model model, PageObject pageObject){
-        model.addAttribute("list", this.materialInputService.list());
+    @RequestMapping("/list")
+    public String list(Model model, PageObject pageObject, MaterialInputSearchForm materialInputSearchForm) {
+        PageObject resultPage = this.materialInputService.materialInputList(pageObject);
+        model.addAttribute("page", resultPage);
+        model.addAttribute("supplierList", this.supplierService.list());
         return "materialInputList";
+
     }
 }
 
