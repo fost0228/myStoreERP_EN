@@ -47,9 +47,10 @@ public class MaterialInputController {
 
     @RequestMapping("/list")
     public String list(Model model, PageObject pageObject, MaterialInputSearchForm materialInputSearchForm) {
-        PageObject resultPage = this.materialInputService.materialInputList(pageObject);
+        PageObject resultPage = this.materialInputService.materialInputList(pageObject, materialInputSearchForm);
         model.addAttribute("page", resultPage);
         model.addAttribute("supplierList", this.supplierService.list());
+        model.addAttribute("form", materialInputSearchForm);
         return "materialInputList";
 
     }

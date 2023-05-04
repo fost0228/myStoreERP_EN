@@ -6,6 +6,7 @@ import com.alibaba.excel.event.AnalysisEventListener;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.southwind.entity.MaterialInput;
+import com.southwind.form.MaterialInputSearchForm;
 import com.southwind.mapper.MaterialInputMapper;
 import com.southwind.mapper.MaterialMapper;
 import com.southwind.mapper.StorageMapper;
@@ -17,6 +18,7 @@ import com.southwind.util.ImportResult;
 import com.southwind.util.MaterialInputExcelModel;
 import com.southwind.entity.*;
 import com.southwind.util.PageObject;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -154,10 +156,21 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
         return result;
     }
 
+
     @Override
-    public PageObject materialInputList(PageObject pageObject) {
+    public PageObject materialInputList(PageObject pageObject, MaterialInputSearchForm materialInputSearchForm) {
         Page<MaterialInput> page = new Page<>(pageObject.getCurrent(), pageObject.getSize());
-        Page<MaterialInput> resultPage = this.materialInputMapper.selectPage(page, null);
+        QueryWrapper<MaterialInput> queryWrapper = new QueryWrapper<>();
+        boolean supplierIdFlag = materialInputSearchForm.getSupplierId() != null;
+        boolean statusFlag = materialInputSearchForm.getStatus() != null;
+        queryWrapper.eq(supplierIdFlag, "supplier_id", materialInputSearchForm.getSupplierId())
+        .eq(StringUtils.isNotBlank(materialInputSearchForm.getMaterialName()), "material_name", materialInputSearchForm.getMaterialName())
+        .eq(StringUtils.isNotBlank(materialInputSearchForm.getBatchNo()), "batch_no", materialInputSearchForm.getBatchNo())
+        .eq(statusFlag, "status", materialInputSearchForm.getStatus())
+        .between(StringUtils.isNotBlank(materialInputSearchForm.getOrderDate1())
+                        && StringUtils.isNotBlank(materialInputSearchForm.getOrderDate2()),
+                "order_date", materialInputSearchForm.getOrderDate1(), materialInputSearchForm.getOrderDate2());
+        Page<MaterialInput> resultPage = this.materialInputMapper.selectPage(page, queryWrapper);
         PageObject result = new PageObject();
         result.setCurrent(resultPage.getCurrent());
         result.setSize(resultPage.getSize());

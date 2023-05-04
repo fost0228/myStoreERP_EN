@@ -69,26 +69,27 @@
         </td>
         <td align="right">
             <form id="form1" modelAttribute="enrollment" action="/materialInput/list" method="post">
-                Supplier: <select id="supplierId" name="supplierId">
+                Supplier: <select th:value="${form.supplierId}" id="supplierId" name="supplierId">
                 <option value="">None</option>
                 <option
                         th:each="supplier:${supplierList}"
                         th:value="${supplier.supplierId}"
                         th:text="${supplier.supplierName}"
+                        th:selected="${form.supplierId== supplier.supplierId}"
                 ></option>
             </select>
-                Material: <input type="text" id="materialName" name="materialName" style="width:110px;">
-                Batch No.: <input type="text" id="batchNo" name="batchNo" style="width:110px;">
+                Material: <input th:value="${form.materialName}" type="text" id="materialName" name="materialName" style="width:110px;">
+                Batch No.: <input th:value="${form.batchNo}" type="text" id="batchNo" name="batchNo" style="width:110px;">
                 Status：
-                <select name="status" id="status">
-                    <option value="">None</option>
-                    <option value="0">Not Validate</option>
-                    <option value="1">Validated</option>
-                    <option value="2">In storage</option>
+                <select th:value="${form.status}" name="status" id="status">
+                    <option value="" th:selected="${form.status == ''}">None</option>
+                    <option value="0" th:selected="${form.status == 0}">Not Validate</option>
+                    <option value="1" th:selected="${form.status == 1}">Validated</option>
+                    <option value="2" th:selected="${form.status == 2}">In storage</option>
                 </select>
-                日期:<input class="easyui-datebox" id="orderDate" name="orderDate1" editable="false"
+                日期:<input th:value="${form.orderDate1}" class="easyui-datebox" id="orderDate" name="orderDate1" editable="false"
                           style="width:130px;">
-                -<input class="easyui-datebox" id="orderDate2" name="orderDate2" editable="false"
+                -<input th:value="${form.orderDate2}" class="easyui-datebox" id="orderDate2" name="orderDate2" editable="false"
                         style="width:130px;">
                 <a href="javascript:void(0);" class="easyui-linkbutton" plain="true" onclick="materialInputSearch()"
                    iconCls="icon-search">搜索</a>
