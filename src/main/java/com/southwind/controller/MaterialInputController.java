@@ -1,10 +1,13 @@
 package com.southwind.controller;
 
 
+import com.alibaba.excel.EasyExcel;
 import com.southwind.form.MaterialInputSearchForm;
 import com.southwind.service.MaterialInputService;
 import com.southwind.service.SupplierService;
+import com.southwind.util.CustomCellWriteHandler;
 import com.southwind.util.ImportResult;
+import com.southwind.util.MaterialInputExportModel;
 import com.southwind.util.PageObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -16,7 +19,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.List;
 
 /**
  * <p>
@@ -53,6 +59,24 @@ public class MaterialInputController {
         model.addAttribute("form", materialInputSearchForm);
         return "materialInputList";
 
+    }
+
+    @GetMapping("/export")
+    public void exportData(HttpServletResponse response) {
+        try {
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding("UTF-8");
+            String fileName = URLEncoder.encode("采购数据", "UTF-8");
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+            //get data
+            List<MaterialInputExportModel> list = this.materialInputService.getExportList();
+            EasyExcel.write(response.getOutputStream(), MaterialInputExportModel.class)
+                    .registerWriteHandler(new CustomCellWriteHandler())
+                    .sheet("采购数据")
+                    .doWrite(list);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 

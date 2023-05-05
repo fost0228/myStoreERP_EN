@@ -13,17 +13,15 @@ import com.southwind.mapper.StorageMapper;
 import com.southwind.mapper.SupplierMapper;
 import com.southwind.service.MaterialInputService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.southwind.util.CommonUtils;
-import com.southwind.util.ImportResult;
-import com.southwind.util.MaterialInputExcelModel;
+import com.southwind.util.*;
 import com.southwind.entity.*;
-import com.southwind.util.PageObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -177,5 +175,36 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
         result.setTotal(resultPage.getTotal());
         result.setData(resultPage.getRecords());
         return result;
+    }
+
+    @Override
+    public List<MaterialInputExportModel> getExportList() {
+        List<MaterialInput> materialInputs = this.materialInputMapper.selectList(null);
+        ArrayList<MaterialInputExportModel> list = new ArrayList<>();
+        for(MaterialInput materialInput : materialInputs){
+            MaterialInputExportModel model = new MaterialInputExportModel();
+            BeanUtils.copyProperties(materialInput, model);
+            //date
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String format = materialInput.getOrderDate().format(dateTimeFormatter);
+            model.setOrderDate(format);
+            //status
+            String status = "";
+            switch(materialInput.getStatus()){
+                case 0:
+                    status = "Not validate";
+                    break;
+                case 1:
+                    status = "validated";
+                    break;
+                case 2:
+                    status = "In storage";
+                    break;
+            }
+            model.setStatus(status);
+            list.add(model);
+
+        }
+        return list;
     }
 }
