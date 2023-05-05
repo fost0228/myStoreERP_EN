@@ -164,8 +164,8 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
         boolean supplierIdFlag = materialInputSearchForm.getSupplierId() != null;
         boolean statusFlag = materialInputSearchForm.getStatus() != null;
         queryWrapper.eq(supplierIdFlag, "supplier_id", materialInputSearchForm.getSupplierId())
-        .eq(StringUtils.isNotBlank(materialInputSearchForm.getMaterialName()), "material_name", materialInputSearchForm.getMaterialName())
-        .eq(StringUtils.isNotBlank(materialInputSearchForm.getBatchNo()), "batch_no", materialInputSearchForm.getBatchNo())
+        .like(StringUtils.isNotBlank(materialInputSearchForm.getMaterialName()), "material_name", materialInputSearchForm.getMaterialName())
+        .like(StringUtils.isNotBlank(materialInputSearchForm.getBatchNo()), "batch_no", materialInputSearchForm.getBatchNo())
         .eq(statusFlag, "status", materialInputSearchForm.getStatus())
         .between(StringUtils.isNotBlank(materialInputSearchForm.getOrderDate1())
                         && StringUtils.isNotBlank(materialInputSearchForm.getOrderDate2()),

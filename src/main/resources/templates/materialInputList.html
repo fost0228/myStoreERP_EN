@@ -23,26 +23,28 @@
                     let orderDate1 = $("#orderDate1").val();
                     let orderDate2 = $("#orderDate2").val();
                     location.href = "/materialInput/list?current=" + current +
-                        "&size=" + size
-                        // +
-                        // "&supplierId=" + supplierId +
-                        // "&materialName=" + materialName +
-                        // "&batchNo=" + batchNo +
-                        // "&status=" + status +
-                        // "&orderDate1=" + orderDate1 +
-                        // "&orderDate2=" + orderDate2
-                    ;
+                        "&size=" + size +
+                        "&supplierId=" + supplierId +
+                        "&materialName=" + materialName +
+                        "&batchNo=" + batchNo +
+                        "&status=" + status +
+                        "&orderDate1=" + orderDate1 +
+                        "&orderDate2=" + orderDate2;
                 },
                 onSelectPage: function (current, size) {
-                    location.href = "/materialInput/list?current=" + current + "&size=" + size
-                        // +
-                        // "&supplierId=" + supplierId +
-                        // "&materialName=" + materialName +
-                        // "&batchNo=" + batchNo +
-                        // "&status=" + status +
-                        // "&orderDate1=" + orderDate1 +
-                        // "&orderDate2=" + orderDate2
-                    ;
+                    let supplierId = $("#supplierId").val();
+                    let materialName = $("#materialName").val();
+                    let batchNo = $("#batchNo").val();
+                    let status = $("#status").val();
+                    let orderDate1 = $("#orderDate1").val();
+                    let orderDate2 = $("#orderDate2").val();
+                    location.href = "/materialInput/list?current=" + current + "&size=" + size +
+                        "&supplierId=" + supplierId +
+                        "&materialName=" + materialName +
+                        "&batchNo=" + batchNo +
+                        "&status=" + status +
+                        "&orderDate1=" + orderDate1 +
+                        "&orderDate2=" + orderDate2;
                 }
             });
         });
