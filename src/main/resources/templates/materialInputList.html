@@ -61,6 +61,50 @@
         function materialExport(){
             location.href = "/materialInput/export"
         }
+
+        function verify(){
+            var rows = $("#dgitem").datagrid("getSelections");
+            if(rows.length <= 0){
+                $.messager.alert("Notice", "Please choose the item needed to be validated！","error");
+                return false;
+            }
+            var idArray = "";
+            for(let i=0; i<rows.length; i++) {
+                let row = rows[i];
+                if (row.status == 'Validated') {
+                    $.messager.alert("Notice", "Can not re-validate items！", "error");
+                    return false;
+                }
+                if (row.status == 'In Storage') {
+                    $.messager.alert("Notice", "Items already in storage，can not validate！", "error");
+                    return false;
+                }
+                if((i+1) != rows.length){
+                    idArray += row.id+",";
+                }else{
+                    idArray += row.id;
+                }
+            }
+
+            $.messager.confirm('提示','审核后的数据不能修改，请确认',function(res){
+
+                if(res){
+                    $.post(
+                        "/materialInput/verify?status=1&idArray="+idArray,
+                        function (data) {
+                            if(data == "success"){
+                                $.messager.alert("操作提示", "审核成功！","info",function () {
+                                    window.location.href = "/materialInput/list";
+                                });
+                            }else{
+                                $.messager.alert("操作提示", "审核失败！","error");
+                            }
+                        }
+                    );
+                }
+
+            })
+        }
     </script>
 </head>
 <body>
