@@ -22,4 +22,6 @@ public interface MaterialInputService extends IService<MaterialInput> {
     public ImportResult excelImport(InputStream inputStream);
     public PageObject materialInputList(PageObject pageObject,MaterialInputSearchForm materialInputSearchForm);
     public List<MaterialInputExportModel> getExportList();
+
+    public boolean verify(Integer status, String idArray);
 }

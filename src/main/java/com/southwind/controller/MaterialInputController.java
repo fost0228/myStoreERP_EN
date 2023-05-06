@@ -11,12 +11,9 @@ import com.southwind.util.MaterialInputExportModel;
 import com.southwind.util.PageObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -77,6 +74,15 @@ public class MaterialInputController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @PostMapping("/verify")
+    @ResponseBody
+    public String verify(Integer status, String idArray) {
+        boolean verify = this.materialInputService.verify(status, idArray);
+        if (verify) return "success";
+        return "fail";
+
     }
 }
 
