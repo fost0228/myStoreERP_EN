@@ -231,7 +231,8 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
                     MaterialInput materialInput = this.materialInputMapper.selectById(id);
                     materialInput.setStatus(status);
                     //generate order no.
-//                    materialInput.setOrderNo();
+                    Integer count = this.ordersMapper.selectCount(null);
+                    materialInput.setOrderNo(CommonUtils.createOrderNo(count,1));
                     int updateById = this.materialInputMapper.updateById(materialInput);
                     if(updateById != 1) return false;
                 }
