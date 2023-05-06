@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.southwind.entity.MaterialInput;
 import com.southwind.form.MaterialInputSearchForm;
-import com.southwind.mapper.MaterialInputMapper;
-import com.southwind.mapper.MaterialMapper;
-import com.southwind.mapper.StorageMapper;
-import com.southwind.mapper.SupplierMapper;
+import com.southwind.mapper.*;
 import com.southwind.service.MaterialInputService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.southwind.util.*;
@@ -47,6 +44,9 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
 
     @Autowired
     private StorageMapper storageMapper;
+
+    @Autowired
+    private OrdersMapper ordersMapper;
 
 
     @Override
@@ -211,20 +211,31 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
     @Override
     public boolean verify(Integer status, String idArray) {
         boolean flag = false;
+        String[] ids = idArray.split(",");
         switch(status){
             case 1:
                 //validate
-                String[] ids = idArray.split(",");
+
                 for(String id : ids){
                     MaterialInput materialInput = this.materialInputMapper.selectById(id);
-                    materialInput.setStatus(1);
+                    materialInput.setStatus(status);
                     int updateById = this.materialInputMapper.updateById(materialInput);
                     if(updateById != 1) return false;
                 }
                 flag = true;
                 break;
+                //into storage
             case 2:
 
+                for(String id : ids){
+                    MaterialInput materialInput = this.materialInputMapper.selectById(id);
+                    materialInput.setStatus(status);
+                    //generate order no.
+//                    materialInput.setOrderNo();
+                    int updateById = this.materialInputMapper.updateById(materialInput);
+                    if(updateById != 1) return false;
+                }
+                flag = true;
                 break;
 
         }

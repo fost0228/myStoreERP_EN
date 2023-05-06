@@ -105,6 +105,57 @@
 
             })
         }
+
+        function inStorage(){
+            var rows = $("#dgitem").datagrid("getSelections");
+            if(rows.length <= 0){
+                $.messager.alert("操作提示", "Please choose！","error");
+                return false;
+            }
+            var idArray = "";
+            var supplierName = "";
+            for(let i=0; i<rows.length; i++){
+                let row = rows[i];
+                if(row.status == 'Not validate'){
+                    $.messager.alert("操作提示", "Includes not validated order，please validate first！","error");
+                    return false;
+                }
+                if(row.status == 'In storage'){
+                    $.messager.alert("操作提示", "Already in storage，cannot re-entry！","error");
+                    return false;
+                }
+
+                if(supplierName !='' && supplierName != row.supplierName){
+                    $.messager.alert("操作提示", "一笔入库单只能选择同一个供应商的订单！","error");
+                    return false;
+                }
+
+                supplierName = row.supplierName;
+
+                if((i+1) != rows.length){
+                    idArray += row.id+",";
+                }else{
+                    idArray += row.id;
+                }
+            }
+
+            $.messager.confirm('提示','确认入库？',function(res){
+                if(res){
+                    $.post(
+                        "/materialInput/inStorage?idArray="+idArray,
+                        function (data) {
+                            if(data == "success"){
+                                $.messager.alert("操作提示", "Success！","info",function () {
+                                    window.location.href = "/materialInput/list";
+                                });
+                            }else{
+                                $.messager.alert("操作提示", "Fail！","error");
+                            }
+                        }
+                    );
+                }
+            })
+        }
     </script>
 </head>
 <body>
