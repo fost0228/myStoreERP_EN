@@ -230,6 +230,8 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
                 for(String id : ids){
                     MaterialInput materialInput = this.materialInputMapper.selectById(id);
                     materialInput.setStatus(status);
+                    //sync data into orders & order_detail table
+
                     //generate order no.
                     Integer count = this.ordersMapper.selectCount(null);
                     materialInput.setOrderNo(CommonUtils.createOrderNo(count,1));

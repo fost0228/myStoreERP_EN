@@ -130,7 +130,7 @@
                     return false;
                 }
 
-                supplierName = row.supplierName;
+                // supplierName = row.supplierName;
 
                 if((i+1) != rows.length){
                     idArray += row.id+",";
@@ -142,7 +142,7 @@
             $.messager.confirm('提示','确认入库？',function(res){
                 if(res){
                     $.post(
-                        "/materialInput/inStorage?idArray="+idArray,
+                        "/materialInput/verify?status=2&idArray="+idArray,
                         function (data) {
                             if(data == "success"){
                                 $.messager.alert("操作提示", "Success！","info",function () {
