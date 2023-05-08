@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,9 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
 
     @Autowired
     private OrdersMapper ordersMapper;
+
+    @Autowired
+    private OrderDetailMapper orderDetailMapper;
 
 
     @Override
@@ -162,12 +166,12 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
         boolean supplierIdFlag = materialInputSearchForm.getSupplierId() != null;
         boolean statusFlag = materialInputSearchForm.getStatus() != null;
         queryWrapper.eq(supplierIdFlag, "supplier_id", materialInputSearchForm.getSupplierId())
-        .like(StringUtils.isNotBlank(materialInputSearchForm.getMaterialName()), "material_name", materialInputSearchForm.getMaterialName())
-        .like(StringUtils.isNotBlank(materialInputSearchForm.getBatchNo()), "batch_no", materialInputSearchForm.getBatchNo())
-        .eq(statusFlag, "status", materialInputSearchForm.getStatus())
-        .between(StringUtils.isNotBlank(materialInputSearchForm.getOrderDate1())
-                        && StringUtils.isNotBlank(materialInputSearchForm.getOrderDate2()),
-                "order_date", materialInputSearchForm.getOrderDate1(), materialInputSearchForm.getOrderDate2());
+                .like(StringUtils.isNotBlank(materialInputSearchForm.getMaterialName()), "material_name", materialInputSearchForm.getMaterialName())
+                .like(StringUtils.isNotBlank(materialInputSearchForm.getBatchNo()), "batch_no", materialInputSearchForm.getBatchNo())
+                .eq(statusFlag, "status", materialInputSearchForm.getStatus())
+                .between(StringUtils.isNotBlank(materialInputSearchForm.getOrderDate1())
+                                && StringUtils.isNotBlank(materialInputSearchForm.getOrderDate2()),
+                        "order_date", materialInputSearchForm.getOrderDate1(), materialInputSearchForm.getOrderDate2());
         Page<MaterialInput> resultPage = this.materialInputMapper.selectPage(page, queryWrapper);
         PageObject result = new PageObject();
         result.setCurrent(resultPage.getCurrent());
@@ -181,7 +185,7 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
     public List<MaterialInputExportModel> getExportList() {
         List<MaterialInput> materialInputs = this.materialInputMapper.selectList(null);
         ArrayList<MaterialInputExportModel> list = new ArrayList<>();
-        for(MaterialInput materialInput : materialInputs){
+        for (MaterialInput materialInput : materialInputs) {
             MaterialInputExportModel model = new MaterialInputExportModel();
             BeanUtils.copyProperties(materialInput, model);
             //date
@@ -190,7 +194,7 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
             model.setOrderDate(format);
             //status
             String status = "";
-            switch(materialInput.getStatus()){
+            switch (materialInput.getStatus()) {
                 case 0:
                     status = "Not validate";
                     break;
@@ -212,31 +216,49 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
     public boolean verify(Integer status, String idArray) {
         boolean flag = false;
         String[] ids = idArray.split(",");
-        switch(status){
+        switch (status) {
             case 1:
                 //validate
 
-                for(String id : ids){
+                for (String id : ids) {
                     MaterialInput materialInput = this.materialInputMapper.selectById(id);
                     materialInput.setStatus(status);
                     int updateById = this.materialInputMapper.updateById(materialInput);
-                    if(updateById != 1) return false;
+                    if (updateById != 1) return false;
                 }
                 flag = true;
                 break;
-                //into storage
+            //into storage
             case 2:
 
-                for(String id : ids){
+                for (String id : ids) {
                     MaterialInput materialInput = this.materialInputMapper.selectById(id);
                     materialInput.setStatus(status);
                     //sync data into orders & order_detail table
+                    Orders orders = new Orders();
+                    Integer count = this.ordersMapper.selectCount(null);
+                    orders.setOrderNo(CommonUtils.createOrderNo(count, 1));
+                    orders.setInvalid(1);
+                    orders.setVerifyPerson("Layia");
+                    orders.setVerifyDate(LocalDateTime.now());
+                    orders.setEmployeeName(materialInput.getUserName());
+                    orders.setOrderType(1);
+                    int insert = this.ordersMapper.insert(orders);
+                    if (insert != 1) return false;
+                    //sync data into table orderDetail
+                    OrderDetail orderDetail = new OrderDetail();
+                    BeanUtils.copyProperties(materialInput, orderDetail);
+                    orderDetail.setOrderNo(orders.getOrderNo());
+                    orderDetail.setOrderFlag("Normal");
+                    int insert1 = this.orderDetailMapper.insert(orderDetail);
+                    if(insert1 !=1) return false;
+                    materialInput.setStatus(status);
 
                     //generate order no.
-                    Integer count = this.ordersMapper.selectCount(null);
-                    materialInput.setOrderNo(CommonUtils.createOrderNo(count,1));
+
+                    materialInput.setOrderNo(orders.getOrderNo());
                     int updateById = this.materialInputMapper.updateById(materialInput);
-                    if(updateById != 1) return false;
+                    if (updateById != 1) return false;
                 }
                 flag = true;
                 break;

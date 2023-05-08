@@ -117,16 +117,16 @@
             for(let i=0; i<rows.length; i++){
                 let row = rows[i];
                 if(row.status == 'Not validate'){
-                    $.messager.alert("操作提示", "Includes not validated order，please validate first！","error");
+                    $.messager.alert("Notice", "Includes not validated order，please validate first！","error");
                     return false;
                 }
-                if(row.status == 'In storage'){
-                    $.messager.alert("操作提示", "Already in storage，cannot re-entry！","error");
+                if(row.status == 'In Storage'){
+                    $.messager.alert("Notice", "Already in storage，cannot re-in storage！","error");
                     return false;
                 }
 
                 if(supplierName !='' && supplierName != row.supplierName){
-                    $.messager.alert("操作提示", "一笔入库单只能选择同一个供应商的订单！","error");
+                    $.messager.alert("Notice", "一笔入库单只能选择同一个供应商的订单！","error");
                     return false;
                 }
 
