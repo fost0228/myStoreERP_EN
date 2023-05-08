@@ -84,5 +84,13 @@ public class MaterialInputController {
         return "fail";
 
     }
+
+    @PostMapping("/delete")
+    @ResponseBody
+    public String delete(String idArray){
+        boolean delete = this.materialInputService.delete(idArray);
+        if(delete) return "success";
+        return "fail";
+    }
 }
 

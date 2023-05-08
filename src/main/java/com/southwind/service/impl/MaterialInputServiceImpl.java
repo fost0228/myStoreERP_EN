@@ -266,4 +266,17 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
         }
         return flag;
     }
+
+    @Override
+    public boolean delete(String idArray) {
+        String[] ids = idArray.split(",");
+        List<Integer> idList = new ArrayList<>();
+        for (String id : ids){
+            idList.add(Integer.parseInt(id));
+        }
+        int batchIds = this.materialInputMapper.deleteBatchIds(idList);
+        if(batchIds == 0) return false;
+        return true;
+
+    }
 }

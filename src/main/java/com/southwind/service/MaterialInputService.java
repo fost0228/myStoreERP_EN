@@ -24,4 +24,5 @@ public interface MaterialInputService extends IService<MaterialInput> {
     public List<MaterialInputExportModel> getExportList();
 
     public boolean verify(Integer status, String idArray);
+    public boolean delete(String idArray);
 }
