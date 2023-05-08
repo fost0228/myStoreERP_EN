@@ -42,7 +42,7 @@ public class Main {
         strategyConfig.setNaming(NamingStrategy.underline_to_camel);
         strategyConfig.setColumnNaming(NamingStrategy.underline_to_camel);
 
-        strategyConfig.setInclude("orders","order_detail");
+        strategyConfig.setInclude("supplier");
         autoGenerator.setStrategy(strategyConfig);
         autoGenerator.execute();
     }
