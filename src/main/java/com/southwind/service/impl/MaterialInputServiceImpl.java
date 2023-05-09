@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.southwind.entity.MaterialInput;
 import com.southwind.form.MaterialInputSearchForm;
 import com.southwind.mapper.*;
+import com.southwind.mo.MaterialInputMO;
 import com.southwind.service.MaterialInputService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.southwind.util.*;
@@ -219,13 +220,20 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
         switch (status) {
             case 1:
                 //validate
-
+                ArrayList<Integer> idList = new ArrayList<>();
                 for (String id : ids) {
-                    MaterialInput materialInput = this.materialInputMapper.selectById(id);
-                    materialInput.setStatus(status);
-                    int updateById = this.materialInputMapper.updateById(materialInput);
-                    if (updateById != 1) return false;
+                    idList.add(Integer.parseInt(id));
+//                    MaterialInput materialInput = this.materialInputMapper.selectById(id);
+//                    materialInput.setStatus(status);
+//                    int updateById = this.materialInputMapper.updateById(materialInput);
+//                    if (updateById != 1) return false;
+
                 }
+                MaterialInputMO materialInputMO = new MaterialInputMO();
+                materialInputMO.setIds(idList);
+                materialInputMO.setStatus(status);
+                int verify = this.materialInputMapper.verify(materialInputMO);
+                if(verify == 0) return false;
                 flag = true;
                 break;
             //into storage

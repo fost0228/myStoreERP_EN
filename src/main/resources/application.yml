@@ -6,3 +6,8 @@ spring:
     password: 1234
 server:
   port: 8181
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:com/southwind/mapper/xml/*.xml
+  type-aliases-package: com.southwind.vo
