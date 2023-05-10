@@ -2,6 +2,7 @@ package com.southwind.controller;
 
 
 import com.southwind.service.OrdersService;
+import com.southwind.service.SupplierService;
 import com.southwind.util.PageObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -26,10 +27,13 @@ public class OrdersController {
 
     @Autowired
     private OrdersService ordersService;
+    @Autowired
+    private SupplierService supplierService;
 
     @RequestMapping("/list")
     public String list(PageObject pageObject,Model model){
         model.addAttribute("page", this.ordersService.ordersList(pageObject));
+        model.addAttribute("supplierList", this.supplierService.list());
         return "ordersList";
     }
 }

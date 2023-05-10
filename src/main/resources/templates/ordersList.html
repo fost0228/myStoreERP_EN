@@ -204,27 +204,26 @@
       <td align="right">
         供应商<select name="supplierId" id="supplierId" style="width:160px">
         <option value="">不选择</option>
-<!--        <option th:each="suppliser:${supplierList}"-->
-<!--                th:value="${suppliser.supplierId}"-->
-<!--                th:text="'('+${suppliser.supplierCode}+')'+${suppliser.supplierName}"-->
-<!--                th:selected="${suppliser.supplierId == ordersForm.supplierId}"-->
+        <option th:each="supplier:${supplierList}"
+                th:value="${supplier.supplierId}"
+                th:text="'('+${supplier.supplierCode}+')'+${supplier.supplierName}"
         ></option>
       </select>
         单据状态
         <select name="invalid" id="invalid"  style="width:100px">
-<!--          <option value="" th:selected="${ordersForm.invalid==''}">不选择</option>-->
-<!--          <option value="1" th:selected="${ordersForm.invalid==1}">有效</option>-->
-<!--          <option value="0" th:selected="${ordersForm.invalid==0}">作废</option>-->
+          <option value="">不选择</option>
+          <option value="1">有效</option>
+          <option value="0">作废</option>
         </select>
         审核状态
         <select name="status" id="status"  style="width:100px">
-<!--          <option value="" th:selected="${ordersForm.status==''}">不选择</option>-->
-<!--          <option value="1" th:selected="${ordersForm.status==1}">已审核</option>-->
-<!--          <option value="0" th:selected="${ordersForm.status==0}">未审核</option>-->
+          <option value="" >不选择</option>
+          <option value="1">已审核</option>
+          <option value="0">未审核</option>
         </select>
-<!--        开单人<input type="text" name="employeeName" id="employeeName" th:value="${ordersForm.employeeName}" style="width:160px">-->
-<!--        时间<input type="text" class="easyui-datebox" th:value="${ordersForm.orderDate}" name="orderDate" id="orderDate" style="width:160px">-->
-<!--        -<input type="text" class="easyui-datebox" th:value="${ordersForm.orderDate2}" name="orderDate2" id="orderDate2"  style="width:160px">-->
+        开单人<input type="text" name="employeeName" id="employeeName" style="width:160px">
+        时间<input type="text" class="easyui-datebox" name="orderDate" id="orderDate" style="width:160px">
+        -<input type="text" class="easyui-datebox" name="orderDate2" id="orderDate2"  style="width:160px">
         <a href="javascript:void(0);" class="easyui-linkbutton" plain="true" onclick="ordersSearch()" iconCls="icon-search" >搜索</a>
       </td>
     </tr>
