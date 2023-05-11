@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.southwind.entity.OrderDetail;
 import com.southwind.entity.Orders;
 import com.southwind.entity.Supplier;
+import com.southwind.form.OrdersSearchForm;
 import com.southwind.mapper.OrderDetailMapper;
 import com.southwind.mapper.OrdersMapper;
 import com.southwind.mapper.SupplierMapper;
@@ -38,7 +39,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
 //    private SupplierMapper supplierMapper;
 
     @Override
-    public PageObject ordersList(PageObject pageObject) {
+    public PageObject ordersList(PageObject pageObject, OrdersSearchForm form) {
 //        ArrayList<OrdersVO> ordersVOS = new ArrayList<>();
 //        List<Orders> orders = this.ordersMapper.selectList(null);
 //        for(Orders order : orders){
@@ -55,12 +56,12 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
 //    }
         Long index = (pageObject.getCurrent() -1)*pageObject.getSize();
         Long length = pageObject.getSize();
-        List<OrdersVO> ordersVOList = this.ordersMapper.ordersVOList(index, length);
+        List<OrdersVO> ordersVOList = this.ordersMapper.ordersVOList(index, length, form);
         PageObject result = new PageObject();
         result.setData(ordersVOList);
         result.setSize(pageObject.getSize());
         result.setCurrent(pageObject.getCurrent());
-        result.setTotal(this.ordersMapper.ordersVOCount());
+        result.setTotal(this.ordersMapper.ordersVOCount(form));
         return result;
     }
 }

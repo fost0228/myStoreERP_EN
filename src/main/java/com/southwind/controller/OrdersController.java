@@ -1,6 +1,8 @@
 package com.southwind.controller;
 
 
+import com.southwind.form.MaterialInputSearchForm;
+import com.southwind.form.OrdersSearchForm;
 import com.southwind.service.OrdersService;
 import com.southwind.service.SupplierService;
 import com.southwind.util.PageObject;
@@ -31,8 +33,8 @@ public class OrdersController {
     private SupplierService supplierService;
 
     @RequestMapping("/list")
-    public String list(PageObject pageObject,Model model){
-        model.addAttribute("page", this.ordersService.ordersList(pageObject));
+    public String list(PageObject pageObject, Model model, OrdersSearchForm form){
+        model.addAttribute("page", this.ordersService.ordersList(pageObject, form));
         model.addAttribute("supplierList", this.supplierService.list());
         return "ordersList";
     }
