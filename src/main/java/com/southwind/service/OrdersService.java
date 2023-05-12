@@ -19,4 +19,7 @@ import java.util.List;
  */
 public interface OrdersService extends IService<Orders> {
     public PageObject ordersList(PageObject pageObject, OrdersSearchForm form);
+    public boolean batchDelete(String orderNoArr);
+    public boolean batchVerify(String orderNoArr);
+    public boolean batchInvalid(String orderNoArr);
 }

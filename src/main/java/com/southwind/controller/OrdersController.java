@@ -8,9 +8,7 @@ import com.southwind.service.SupplierService;
 import com.southwind.util.PageObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import org.springframework.stereotype.Controller;
 
@@ -39,5 +37,30 @@ public class OrdersController {
         model.addAttribute("form", form);
         return "ordersList";
     }
+
+    @PostMapping("/batchDelete")
+    @ResponseBody
+    public String batchDelete(String orderNoArr){
+        boolean batchDelete = this.ordersService.batchDelete(orderNoArr);
+        if(batchDelete) return "success";
+        return "fail";
+    }
+
+    @PostMapping("/batchVerify")
+    @ResponseBody
+    public String batchVerify(String orderNoArr){
+        boolean b = this.ordersService.batchVerify(orderNoArr);
+        if(b) return "success";
+        return "fail";
+    }
+
+    @PostMapping("/batchInvalid")
+    @ResponseBody
+    public String batchInvalid(String orderNoArr){
+        boolean b = this.ordersService.batchInvalid(orderNoArr);
+        if(b) return "success";
+        return "fail";
+    }
+
 }
 

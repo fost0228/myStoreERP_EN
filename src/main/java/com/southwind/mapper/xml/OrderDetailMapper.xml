@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.southwind.mapper.OrderDetailMapper">
+    <delete id="batchDelete">
+        delete from order_detail
+        <where>
+            <foreach collection="orderNos" open="order_no in(" close=")" item="orderNo" separator=",">
+                #{orderNo}
+            </foreach>
+        </where>
 
+    </delete>
 </mapper>

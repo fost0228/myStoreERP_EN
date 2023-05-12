@@ -2,6 +2,7 @@ package com.southwind.mapper;
 
 import com.southwind.entity.OrderDetail;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.southwind.mo.OrdersMO;
 
 /**
  * <p>
@@ -12,5 +13,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2023-05-06
  */
 public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
+    public int batchDelete(OrdersMO ordersMO);
 
 }

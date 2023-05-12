@@ -5,6 +5,7 @@ import com.southwind.entity.Orders;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.southwind.form.MaterialInputSearchForm;
 import com.southwind.form.OrdersSearchForm;
+import com.southwind.mo.OrdersMO;
 import com.southwind.vo.OrdersVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,5 +23,7 @@ import java.util.List;
 public interface OrdersMapper extends BaseMapper<Orders> {
     public List<OrdersVO> ordersVOList(Long index, Long length, OrdersSearchForm form);
     public Long ordersVOCount(OrdersSearchForm form);
-
+    public int batchDelete(OrdersMO ordersMO);
+    public int batchVerify(OrdersMO ordersMO);
+    public int batchInvalid(OrdersMO ordersMO);
 }

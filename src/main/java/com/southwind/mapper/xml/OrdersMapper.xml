@@ -51,4 +51,34 @@
 
 
     </select>
+    <delete id="batchDelete">
+        delete from orders
+        <where>
+            <foreach collection="orderNos" open="order_no in(" close=")" item="orderNo" separator=",">
+                #{orderNo}
+            </foreach>
+        </where>
+
+    </delete>
+
+    <update id="batchVerify">
+        update orders set status = 1
+        <where>
+            <foreach collection="orderNos" open="order_no in(" close=")" item="orderNo" separator=",">
+                #{orderNo}
+            </foreach>
+        </where>
+
+    </update>
+
+    <update id="batchInvalid">
+        update orders set invalid = 0
+        <where>
+            <foreach collection="orderNos" open="order_no in(" close=")" item="orderNo" separator=",">
+                #{orderNo}
+            </foreach>
+        </where>
+
+    </update>
+
 </mapper>

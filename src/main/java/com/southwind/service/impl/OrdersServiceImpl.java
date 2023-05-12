@@ -8,6 +8,7 @@ import com.southwind.form.OrdersSearchForm;
 import com.southwind.mapper.OrderDetailMapper;
 import com.southwind.mapper.OrdersMapper;
 import com.southwind.mapper.SupplierMapper;
+import com.southwind.mo.OrdersMO;
 import com.southwind.service.OrdersService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.southwind.util.PageObject;
@@ -32,6 +33,9 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
 
     @Autowired
     private OrdersMapper ordersMapper;
+
+    @Autowired
+    private OrderDetailMapper   orderDetailMapper;
 
 //    @Autowired
 //    private OrderDetailMapper orderDetailMapper;
@@ -63,5 +67,57 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         result.setCurrent(pageObject.getCurrent());
         result.setTotal(this.ordersMapper.ordersVOCount(form));
         return result;
+    }
+
+    @Override
+    public boolean batchDelete(String orderNoArr) {
+        String[] split = orderNoArr.split(",");
+        List<String> orderNoList = new ArrayList<>();
+        for(String orderNo: split){
+//            QueryWrapper<Orders> ordersQueryWrapper = new QueryWrapper<>();
+//            ordersQueryWrapper.eq("order_no", orderNo);
+//            int delete = this.ordersMapper.delete(ordersQueryWrapper);
+//            if(delete != 1) return false;
+//            QueryWrapper<OrderDetail> orderDetailQueryWrapper = new QueryWrapper<>();
+//            orderDetailQueryWrapper.eq("order_no", orderNo);
+//            int delete1 = this.orderDetailMapper.delete(orderDetailQueryWrapper);
+//            if(delete1 != 1) return false;
+            orderNoList.add(orderNo);
+        }
+        OrdersMO ordersMO = new OrdersMO();
+        ordersMO.setOrderNos(orderNoList);
+        int i = this.ordersMapper.batchDelete(ordersMO);
+        if(i == 0) return false;
+        int i1 = this.orderDetailMapper.batchDelete(ordersMO);
+        if(i1 == 0) return false;
+        return true;
+    }
+
+    @Override
+    public boolean batchVerify(String orderNoArr) {
+        String[] split = orderNoArr.split(",");
+        List<String> orderNoList = new ArrayList<>();
+        for(String orderNo: split){
+            orderNoList.add(orderNo);
+        }
+        OrdersMO ordersMO = new OrdersMO();
+        ordersMO.setOrderNos(orderNoList);
+        int i = this.ordersMapper.batchVerify(ordersMO);
+        if(i == 0) return false;
+        return true;
+    }
+
+    @Override
+    public boolean batchInvalid(String orderNoArr) {
+        String[] split = orderNoArr.split(",");
+        List<String> orderNoList = new ArrayList<>();
+        for(String orderNo: split){
+            orderNoList.add(orderNo);
+        }
+        OrdersMO ordersMO = new OrdersMO();
+        ordersMO.setOrderNos(orderNoList);
+        int i = this.ordersMapper.batchInvalid(ordersMO);
+        if(i == 0) return false;
+        return true;
     }
 }
