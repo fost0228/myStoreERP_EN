@@ -36,6 +36,7 @@ public class OrdersController {
     public String list(PageObject pageObject, Model model, OrdersSearchForm form){
         model.addAttribute("page", this.ordersService.ordersList(pageObject, form));
         model.addAttribute("supplierList", this.supplierService.list());
+        model.addAttribute("form", form);
         return "ordersList";
     }
 }

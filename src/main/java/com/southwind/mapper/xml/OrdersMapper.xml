@@ -35,10 +35,10 @@
             <if test="supplierId !=null and supplierId !=''">
                 and o.supplier_Id = #{param3.supplierId}
             </if>
-            <if test="invalid !=null and invalid !=''">
+            <if test="invalid !=null">
                 and o.invalid = #{param3.invalid}
             </if>
-            <if test="status !=null and status !=''">
+            <if test="status !=null">
                 and o.status = #{param3.status}
             </if>
             <if test="employeeName !=null and employeeName !=''">
