@@ -219,7 +219,11 @@
         return false;
       }
 
-      batchNoStr += rows[i].batchNo + ","
+      if(i == rows.length -1){
+        batchNoStr += rows[i].batchNo
+      }else{
+        batchNoStr += rows[i].batchNo + ","
+      }
 
       str +=
               rows[i].materialId + ","

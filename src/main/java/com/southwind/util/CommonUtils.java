@@ -63,4 +63,13 @@ public class CommonUtils {
         return stringBuffer.toString();
     }
 
+    public static LocalDateTime parseString2(String string) {
+        StringBuffer stringBuffer = new StringBuffer(string);
+        stringBuffer.append(" 00:00:00");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime date = LocalDateTime.parse(stringBuffer.toString(), dateTimeFormatter);
+        return date;
+    }
+
+
 }

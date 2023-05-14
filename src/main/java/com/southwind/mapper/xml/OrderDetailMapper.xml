@@ -10,4 +10,13 @@
         </where>
 
     </delete>
+    <select id="checkBatchNo" resultType="int">
+        select count(*) from order_detail
+            <where>
+                <foreach collection="batchNoList" open="batch_no in(" close=")" item="batchNo" separator=",">
+                    #{batchNo}
+                </foreach>
+            </where>
+            batch_no in('cqy-2001-003')
+    </select>
 </mapper>

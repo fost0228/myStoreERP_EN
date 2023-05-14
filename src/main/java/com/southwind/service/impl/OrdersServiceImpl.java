@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.southwind.entity.OrderDetail;
 import com.southwind.entity.Orders;
 import com.southwind.entity.Supplier;
+import com.southwind.form.OrdersAddForm;
 import com.southwind.form.OrdersSearchForm;
 import com.southwind.mapper.OrderDetailMapper;
 import com.southwind.mapper.OrdersMapper;
@@ -11,12 +12,15 @@ import com.southwind.mapper.SupplierMapper;
 import com.southwind.mo.OrdersMO;
 import com.southwind.service.OrdersService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.southwind.util.CommonUtils;
 import com.southwind.util.PageObject;
 import com.southwind.vo.OrdersVO;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,5 +123,21 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         int i = this.ordersMapper.batchInvalid(ordersMO);
         if(i == 0) return false;
         return true;
+    }
+
+    @Override
+    public boolean save(OrdersAddForm ordersAddForm) {
+        //save orders
+        Orders orders = new Orders();
+        BeanUtils.copyProperties(ordersAddForm, orders);
+        Integer count = this.ordersMapper.selectCount(null);
+        orders.setOrderNo(CommonUtils.createOrderNo(count,ordersAddForm.getOrderType()));
+        orders.setEmployeeName("Jack");
+        if(StringUtils.isNotBlank(ordersAddForm.getOrderDate())){
+            orders.setOrderDate(CommonUtils.parseString2(ordersAddForm.getOrderDate()));
+        }else{
+            orders.setOrderDate(LocalDateTime.now());
+        }
+        return false;
     }
 }
