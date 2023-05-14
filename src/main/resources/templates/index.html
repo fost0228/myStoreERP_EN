@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>仓库管理系统</title>
+    <link rel="shortcut icon"
+          href="/static/images/favicon.ico" />
+    <th:block th:include="common.html :: source"></th:block>
+    <script type="text/javascript">
+        function loads() {
+            var clientWidth, clientHeight;
+            clientHeight = document.body.clientHeight - 72;
+            $("#tabs").tabs({
+                height : clientHeight
+            });
+        }
+
+        $(function() {
+            tabSize();
+        });
+
+        function tabSize() {
+            //窗口宽度
+            var width = $(window).width() - 280;
+            //窗口高度
+            var height = $(window).height() - 100;
+            var iframeList = $(".iframe");
+            iframeList.each(function() {
+                var dome = $(this);
+                dome.attr("width", width);
+                dome.attr("height", height);
+            })
+        }
+    </script>
+
+</head>
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0"
+      onload="loads();">
+<div class="wrapper">
+    <div class="header" style="background-color: #178A71;height: 60px;">
+        <div class="topleft">
+            <font style="margin-left: 30px;position: relative;top: 8px;" color="white" size="6">ERP进销存仓储管理系统</font>
+        </div>
+        <div class="topright">
+            <li title="点击查看个人信息"><span ><img
+                    src="/static/images/peo.png" ></span><a></a>
+<!--                    href="javascript:void(0)" th:text="${session.employee.employeeName}"></a></li>-->
+            <li><span><img
+                    src="/static/images/Set.png"></span><a
+                    href="javascript:void(0)"
+                    onclick="addTab('修改密码','/updatePassword');">修改密码</a></li>
+            <li><span><img src="/static/images/exit.png"></span><a href="/login/exit">退出</a></li>
+        </div>
+    </div>
+    <div class="left">
+        <dl class="leftmenu">
+            <dd>
+                <div class="title">
+                    <span>仓库管理<i></i></span>
+                </div>
+                <ul class="menuson">
+                    <li><cite></cite>
+                        <a href="javascript:void(0);" onclick="addTab('采购批量入库','/materialInput/list');">采购批量入库</a>
+                    </li>
+                    <li><cite></cite>
+                        <a href="javascript:void(0);" onclick="addTab('采购入库单','/orders/list');">采购入库单</a>
+                    </li>
+                    <li><cite></cite>
+                        <a href="javascript:void(0);" onclick="addTab('采购退货单','/orders/returnList');">采购退货单</a>
+                    </li>
+                    <li><cite></cite><a href="javascript:void(0);"
+                                        onclick="addTab('销售出库单','/sale/list');">销售出库单</a>
+                    </li>
+                    <li><cite></cite><a href="javascript:void(0);"
+                                        onclick="addTab('销售退货单','/sale/returnList');">销售退货单</a>
+                    </li>
+                </ul>
+            </dd>
+            <dd>
+                <div class="title">
+                    <span>系统报表<i></i></span>
+                </div>
+                <ul class="menuson">
+                    <li><cite></cite>
+                        <a href="javascript:void(0);" 	onclick="addTab('仓库明细报表','/report/list');">仓库明细报表</a>
+                    </li>
+                    <li><cite></cite>
+                        <a href="javascript:void(0);" 	onclick="addTab('仓库统计报表','/report/storageList');">仓库统计报表</a>
+                    </li>
+                </ul>
+            </dd>
+            <dd>
+                <div class="title">
+                    <span>用户管理<i></i></span>
+                </div>
+                <ul class="menuson">
+                    <li><cite></cite><a href="javascript:void(0);"
+                                        onclick="addTab('用户管理','/employee/list');">用户管理</a>
+                    </li>
+                </ul>
+            </dd>
+            <dd>
+                <div class="title">
+                    <span>安全管理<i></i></span>
+                </div>
+                <ul class="menuson">
+                    <li><cite></cite><a href="javascript:void(0);"
+                                        onclick="addTab('权限管理','/role/list');">权限管理</a>
+                    </li>
+                    <li><cite></cite><a href="javascript:void(0);"
+                                        onclick="addTab('登录日志','/loginRecord/list');">系统日志</a>
+                    </li>
+                </ul>
+            </dd>
+            <dd>
+                <div class="title">
+                    <span>基础数据<i></i></span>
+                </div>
+                <ul class="menuson">
+                    <li><cite></cite>
+                        <a href="javascript:void(0);" onclick="addTab1('物料类别','/materialType/list')" >物料类别</a>
+                    </li>
+                    <li><cite></cite>
+                        <a href="javascript:void(0);" onclick="addTab1('品种类别','/prodType/list')" >品种类别</a>
+                    </li>
+                    <li><cite></cite>
+                        <a href="javascript:void(0);" onclick="addTab1('物料管理','/material/list')" >物料管理</a>
+                    </li>
+                    <li><cite></cite>
+                        <a href="javascript:void(0);" onclick="addTab1('仓库管理','/storage/list')" >仓库管理</a>
+                    </li>
+                    <li><cite></cite>
+                        <a href="javascript:void(0);" onclick="addTab1('供应商管理','/supplier/list')" >供应商管理</a>
+                    </li>
+                    <li><cite></cite>
+                        <a href="javascript:void(0);" onclick="addTab1('部门管理','/department/list')" >部门管理</a>
+                    </li>
+                </ul>
+            </dd>
+        </dl>
+    </div>
+    <div class="right">
+        <div id="tabs" class="easyui-tabs"
+             style="margin: 0; width: auto; height: 660px; border: true;" >
+            <div title="首页" data-options="closable:false,cache:false"
+                 style="padding: 10px;">
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
