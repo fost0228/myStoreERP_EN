@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -34,6 +36,7 @@ import lombok.EqualsAndHashCode;
 
     private String style;
 
+    @JsonProperty("materialUnit")
     private String unitName;
 
     private String orderId;

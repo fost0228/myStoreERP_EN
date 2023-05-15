@@ -13,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface OrderDetailService extends IService<OrderDetail> {
     public boolean checkBatchNo(String batchNoStr);
+    public boolean checkBatchNo(String orderNo, String batchNoStr);
 }

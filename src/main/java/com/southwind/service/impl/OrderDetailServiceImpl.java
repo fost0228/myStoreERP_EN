@@ -43,4 +43,19 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
         if(count == 0) return true;
         return false;
     }
+
+    @Override
+    public boolean checkBatchNo(String orderNo, String batchNoStr) {
+        String[] split = batchNoStr.split(",");
+        ArrayList<String> batchNoList = new ArrayList<>();
+        for(String batchNo : split){
+            QueryWrapper<OrderDetail> orderDetailQueryWrapper = new QueryWrapper<>();
+            orderDetailQueryWrapper.eq("batch_no", batchNo);
+            List<OrderDetail> orderDetailList = this.orderDetailMapper.selectList(orderDetailQueryWrapper);
+            for (OrderDetail orderDetail : orderDetailList) {
+                if(orderDetail.getOrderNo().equals(orderNo)) return false;
+            }
+        }
+        return true;
+    }
 }

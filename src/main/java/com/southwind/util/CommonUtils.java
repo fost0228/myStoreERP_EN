@@ -35,9 +35,9 @@ public class CommonUtils {
         return date;
     }
 
-    public static String createOrderNo(Integer count,Integer orderType){
+    public static String createOrderNo(Integer count, Integer orderType) {
         StringBuffer stringBuffer = null;
-        switch (orderType){
+        switch (orderType) {
             case 1:
                 stringBuffer = new StringBuffer("OV");
                 break;
@@ -55,8 +55,8 @@ public class CommonUtils {
         String format1 = format.format(new Date());
         stringBuffer.append(format1);
         count++;
-        StringBuffer stringBuffer1 = new StringBuffer(count+"");
-        while (stringBuffer1.length() < 6){
+        StringBuffer stringBuffer1 = new StringBuffer(count + "");
+        while (stringBuffer1.length() < 6) {
             stringBuffer1.insert(0, "0");
         }
         stringBuffer.append(stringBuffer1);
@@ -64,11 +64,22 @@ public class CommonUtils {
     }
 
     public static LocalDateTime parseString2(String string) {
-        StringBuffer stringBuffer = new StringBuffer(string);
-        stringBuffer.append(" 00:00:00");
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime date = LocalDateTime.parse(stringBuffer.toString(), dateTimeFormatter);
-        return date;
+        if (string.contains("T")) {
+            int t = string.indexOf("T");
+            string = string.substring(0, t);
+            StringBuffer stringBuffer = new StringBuffer(string);
+            stringBuffer.append(" 00:00:00");
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime date = LocalDateTime.parse(stringBuffer.toString(), dateTimeFormatter);
+            return date;
+        } else {
+            StringBuffer stringBuffer = new StringBuffer(string);
+            stringBuffer.append(" 00:00:00");
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime date = LocalDateTime.parse(stringBuffer.toString(), dateTimeFormatter);
+            return date;
+        }
+
     }
 
 

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>采购入库维护</title>
+    <th:block th:include="common.html :: source"></th:block>
+</head>
+<body>
+<script type="text/javascript">
+    $(function(){
+        //初始化
+        $('#dgitem').datagrid({
+            toolbar:[{
+                text:'添加',
+                iconCls:'icon-add',
+                handler:function(){
+                    if($("#status").val() != "0"){
+                        $.messager.alert("操作提示", "已审核的单据不能添加！","error");
+                        return false;
+                    }
+                    if($("#invalid").val() == "0"){
+                        $.messager.alert("操作提示", "已作废的单据不能添加！","error");
+                        return false;
+                    }
+                    $('#dgitem').datagrid('appendRow',{});
+                    //获取当前行的索引（最后一行）
+                    lastIndex = $('#dgitem').datagrid('getRows').length-1;
+                    //选中当前行
+                    $('#dgitem').datagrid('selectRow', lastIndex);
+                    //设置为可以编辑状态
+                    $('#dgitem').datagrid('beginEdit', lastIndex);
+                    storageName = getEditRow(lastIndex,'storageName');
+                    $(storageName.target).combogrid({
+                        panelWidth:300,
+                        value:'storageName',
+                        idField:'storageName',
+                        textField:'storageName',
+                        columns:[
+                            [
+                            {field:'storageId',title:'仓库id',width:60},
+                            {field:'storageCode',title:'仓库编号',width:100},
+                            {field:'storageName',title:'库存名称',width:120}
+                        ]
+                        ],
+                        onSelect:function(idx,row) {
+                            storageId = getEditRow(lastIndex,'storageId');
+                            $(storageId.target).val(row.storageId);
+                            m_storageId=row.storageId;
+                        }
+                    });
+                    //加载仓库下拉框的数据
+                    $.get(
+                        "/orders/storageList",
+                        function(data){
+                            $(storageName.target).combogrid('grid').datagrid('loadData', data);
+                        },
+                        'json'
+                    );
+                    materialCode = getEditRow(lastIndex,'materialCode');
+                    $(materialCode.target).combogrid({
+                        panelWidth:620,
+                        value:'materialCode',
+                        idField:'materialCode',
+                        textField:'materialCode',
+                        columns:[
+                            [
+                            {field:'materialId',title:'ID',width:100},
+                            {field:'materialCode',title:'编码',width:70},
+                            {field:'materialName',title:'名称',width:120},
+                            {field:'style',title:'规格',width:80},
+                            {field:'materialUnit',title:'单位',width:80}
+                        ]
+                        ],onSelect:function(idx,row) {
+                            materialId = getEditRow(lastIndex,'materialId');
+                            $(materialId.target).val(row.materialId);
+                            materialname = getEditRow(lastIndex,'materialName');
+                            $(materialname.target).val(row.materialName);
+                            style = getEditRow(lastIndex,'style');
+                            $(style.target).val(row.style);
+                            materialUnit = getEditRow(lastIndex,'materialUnit');
+                            $(materialUnit.target).val(row.materialUnit);
+                        }
+                    });
+                    //加载物料数据列表
+                    $.get(
+                        '/orders/materialList',
+                        function(data){
+                            $(materialCode.target).combogrid('grid').datagrid('loadData', data);
+                        },
+                        'json'
+                    );
+                }
+            },'-',{
+                text:'删除',
+                iconCls:'icon-remove',
+                handler:function(){
+                    if($("#status").val() !="0"){
+                        $.messager.alert("操作提示", "已审核的单据不能删除！","error");
+                        return false;
+                    }
+                    if($("#invalid").val() =="0"){
+                        $.messager.alert("操作提示", "已作废的单据不能删除！","error");
+                        return false;
+                    }
+                    //获取选中的行
+                    var row = $('#dgitem').datagrid('getSelections');
+                    if(row == null) return false;
+                    if(row.length == 0) return false;
+                    $.messager.confirm('提示','确定删除？',function(res){
+                        if(res){
+                            for(var i = 0;i < row.length; i++){
+                                var index = $('#dgitem').datagrid('getRowIndex', row[i]);
+                                $('#dgitem').datagrid('deleteRow', index);
+                            }
+                            lastIndex = 0;
+                        }
+                    })
+                }
+            }],
+            onClickRow:function(rowIndex){
+                if($("#status").val() != "0"){
+                    $.messager.alert("操作提示", "已审核的单据不能修改！","error");
+                    return false;
+                }
+                if($("#invalid").val() == "0"){
+                    $.messager.alert("操作提示", "已作废的单据不能修改！","error");
+                    return false;
+                }
+                //接受修改
+                $('#dgitem').datagrid('acceptChanges');
+                $('#dgitem').datagrid('selectRow', rowIndex);
+                $('#dgitem').datagrid('beginEdit', rowIndex);
+                lastIndex=rowIndex;
+                storageName = getEditRow(lastIndex,'storageName');
+                var row = $('#dgitem').datagrid('getSelected');
+                $(storageName.target).combogrid({
+                    panelWidth:300,
+                    value:'storageName',
+                    idField:'storageName',
+                    textField:'storageName',
+                    columns:[
+                        [
+                            {field:'storageId',title:'仓库id',width:60},
+                            {field:'storageCode',title:'仓库编号',width:100},
+                            {field:'storageName',title:'库存名称',width:120}
+                        ]
+                    ],
+                    onSelect:function(idx,row) {
+                        storageId = getEditRow(lastIndex,'storageId');
+                        $(storageId.target).val(row.storageId);
+                        m_storageId=row.storageId;
+                    }
+                });
+                //加载仓库下拉框的数据
+                $.get(
+                    "/orders/storageList",
+                    function(data){
+                        $(storageName.target).combogrid('grid').datagrid('loadData', data);
+                    },
+                    'json'
+                );
+                materialCode = getEditRow(lastIndex,'materialCode');
+                $(materialCode.target).combogrid({
+                    panelWidth:620,
+                    value:'materialCode',
+                    idField:'materialCode',
+                    textField:'materialCode',
+                    columns:[
+                        [
+                            {field:'materialId',title:'ID',width:100},
+                            {field:'materialCode',title:'编码',width:70},
+                            {field:'materialName',title:'名称',width:120},
+                            {field:'style',title:'规格',width:80},
+                            {field:'materialUnit',title:'单位',width:80}
+                        ]
+                    ],
+                    onSelect:function(idx,row) {
+                        materialId = getEditRow(lastIndex,'materialId');
+                        $(materialId.target).val(row.materialId);
+                        materialname = getEditRow(lastIndex,'materialName');
+                        $(materialname.target).val(row.materialName);
+                        style = getEditRow(lastIndex,'style');
+                        $(style.target).val(row.style);
+                        materialUnit = getEditRow(lastIndex,'materialUnit');
+                        $(materialUnit.target).val(row.materialUnit);
+                    }
+                });
+                //加载物料数据列表
+                $.get(
+                    '/orders/materialList',
+                    function(data){
+                        $(materialCode.target).combogrid('grid').datagrid('loadData', data);
+                    },
+                    'json'
+                );
+                $(storageName.target).combogrid('setValue',row.storageName);
+                $(materialCode.target).combogrid('setValue',row.materialCode);
+            }
+        });
+        //隐藏字段
+        $('#dgitem').datagrid('hideColumn','storageId');
+        $('#dgitem').datagrid('hideColumn','materialId');
+        $.get(
+            '/orderDetail/getOrderDetail?orderNo='+$("#orderNo").val(),
+            function(data){
+                $('#dgitem').datagrid('loadData',data);
+            },
+            "json"
+        );
+    });
+
+    function getEditRow(lastIndex,field){
+        return category = $('#dgitem').datagrid('getEditor', {
+            index : lastIndex,
+            field : field
+        });
+    }
+
+    function save(){
+        $('#dgitem').datagrid('acceptChanges');
+        var rows = $("#dgitem").datagrid("getRows");
+        if(rows.length <= 0){
+            $.messager.alert("操作提示", "请添加入库明细数据！","error");
+            return false;
+        }
+
+        let str = "";
+        let batchNoStr = "";
+        for(let i = 0;i < rows.length;i++)
+        {
+            if(rows[i].storageId=="" || rows[i].materialCode=="" || rows[i].materialName=="" || rows[i].style=="" || rows[i].materialUnit=="" || rows[i].orderId=="" || rows[i].batchNo=="" || rows[i].orderCount=="")
+            {
+                $.messager.alert("操作提示", "第"+(i+1)+"行的数据有误！","error");
+                return false;
+            }
+
+            if(i == rows.length -1){
+                batchNoStr += rows[i].batchNo
+            }else{
+                batchNoStr += rows[i].batchNo + ","
+            }
+
+            str +=
+                rows[i].materialId + ","
+                + rows[i].materialCode + ","
+                + rows[i].materialName + ","
+                + rows[i].style + ","
+                + rows[i].materialUnit + ","
+                + rows[i].orderId + ","
+                + rows[i].batchNo + ","
+                + rows[i].orderCount + ","
+                + rows[i].orderFlag + ","
+                + rows[i].storageId + ","
+                + rows[i].storageName + "&"
+        }
+
+        console.log(str)
+
+        let orderObj = {
+            "orderNo":$("#orderNo").val(),
+            "orderDate":$("#orderDate").datebox("getValue"),
+            "supplierId":$("#supplierId").val(),
+            "orderType":$("#orderType").val(),
+            "invalid":$("#invalid").val(),
+            "status":$("#status").val(),
+            "remark":$("#remark").val(),
+            "orderDetailsStr":str
+        }
+
+        $.post(
+            "/orderDetail/checkBatchNoForEdit?orderNo="+$("#orderNo").val()+"&batchNoStr="+batchNoStr,
+            function (data) {
+                if(data == 'success'){
+                    $.post(
+                        "/orders/update",
+                        orderObj,
+                        function(data){
+                            if(data == 'success'){
+                                $.messager.alert("操作提示", "修改成功！","info",function () {
+                                    var url = "/orders/list";
+                                    var title="采购入库单";
+                                    addTab1(title, url);
+                                });
+                            }else{
+                                $.messager.alert("操作提示", "修改失败！","error");
+                            }
+                        }
+                    );
+                } else {
+                    $.messager.alert("操作提示", "生产批号已存在，不能保存！","error");
+                }
+            }
+        );
+
+    }
+
+    function verify()
+    {
+        if($("#status").val() !="0"){
+            $.messager.alert("操作提示", "单据已审核！","error");
+            return false;
+        }
+        if($("#invalid").val() =="0"){
+            $.messager.alert("操作提示", "已作废的单据不能审核！","error");
+            return false;
+        }
+
+        $.messager.confirm('提示','是否审核？',function(res){
+            if(res){
+                $.post(
+                    "/orders/verify?orderNo=" + $("#orderNo").val(),
+                    function (data) {
+                        if(data == "success"){
+                            $.messager.alert("操作提示", "审核成功！","info",function () {
+                                $("#status").val(1);
+                            });
+                        }else{
+                            $.messager.alert("操作提示", "审核失败！","error");
+                        }
+                    }
+                );
+            }
+        })
+    }
+
+    //作废单据
+    function invalid()
+    {
+        if($("#invalid").val() == "0"){
+            $.messager.alert("操作提示", "单据已作废！","error");
+            return false;
+        }
+        if($("#status").val() != "0"){
+            $.messager.alert("操作提示", "已审核的单据不能作废！","error");
+            return false;
+        }
+
+        $.messager.confirm('提示','是否作废？',function(res){
+            if(res){
+                $.post(
+                    "/orders/invalid?orderNo=" + $("#orderNo").val(),
+                    function (data) {
+                        if(data == "success"){
+                            $.messager.alert("操作提示", "作废成功！","info",function () {
+                                $("#invalid").val(0);
+                            });
+                        }else{
+                            $.messager.alert("操作提示", "作废失败！","error");
+                        }
+                    }
+                );
+            }
+        })
+
+    }
+
+    function del()
+    {
+        if($("#invalid").val() =="0"){
+            $.messager.alert("操作提示", "已作废的单据不能删除！","error");
+            return false;
+        }
+        if($("#status").val() !="0"){
+            $.messager.alert("操作提示", "已审核的单据不能删除！","error");
+            return false;
+        }
+        $.messager.confirm('提示','是否删除？',function(res){
+            if(res){
+                $.post(
+                    "/orders/delete?orderNo=" + $("#orderNo").val(),
+                    function (data) {
+                        if(data == "success"){
+                            $.messager.alert("操作提示", "删除成功！","info",function () {
+                                location.href = '/orders/list';
+                            });
+                        }else{
+                            $.messager.alert("操作提示", "删除失败！","error");
+                        }
+                    }
+                );
+            }
+        })
+    }
+
+</script>
+<form theme="simple" action="/admin/order/save" method="post">
+    <table width="100%" border="0" cellpadding="0" cellspacing="0" BACKGROUND="images/maintitle.jpg">
+        <tr>
+            <td align="left">
+                <a class="easyui-linkbutton" plain="true" icon="icon-save" href="javascript:void(0);" onclick="save()">保存</a>
+                <a class="easyui-linkbutton" plain="true" icon="icon-cut" href="javascript:void(0);" onclick="del()">删除</a>
+                <a class="easyui-linkbutton" plain="true" icon="icon-ok" href="javascript:void(0);" onclick="verify()">审核</a>
+                <a class="easyui-linkbutton" plain="true" icon="icon-no" href="javascript:void(0);" onclick="invalid()">作废</a>
+            </td>
+        </tr>
+    </table>
+    <input type="hidden" name="orderType" id="orderType" value="1">
+    <fieldset>
+        <legend>单据信息</legend>
+        <table width="980" height="120">
+            <tr height="30">
+                <td align="right" width="90" style="vertical-align:top">入库日期:</td>
+                <td width="200" style="vertical-align:top"><input type="text" th:value="${orders.orderDate}" class="easyui-datebox" name="orderDate" id="orderDate" style="width:155px"></td>
+                <td align="right" style="vertical-align:top">供应商:</td>
+                <td style="vertical-align:top" colspan="3">
+                    <select name="supplierId" id="supplierId" style="width:520px">
+                        <option th:each="supplier:${supplierList}"
+                                th:selected="${supplier.supplierId == orders.supplierId}"
+                                th:value="${supplier.supplierId}"
+                                th:text="'('+${supplier.supplierCode}+')'+${supplier.supplierName}"
+                        ></option>
+                    </select>
+                </td>
+
+            </tr>
+            <tr height="30">
+                <td align="right" width="80">单据编号:</td>
+                <td width="200"><input type="text" name="orderNo" th:value="${orders.orderNo}" disabled id="orderNo" style="width:155px"/></td>
+                <td align="right">状态:</td>
+                <td>
+                    <select disabled name = "invalid" id="invalid"  style="width:155px">
+                        <option value="1" th:selected="${orders.invalid == 1}">正常</option>
+                        <option value="0" th:selected="${orders.invalid == 0}">作废</option>
+                    </select>
+                </td>
+                <td align="right">审核状态:</td>
+                <td>
+                    <select disabled name = "status" id="status"  style="width:155px" >
+                        <option value="0" th:selected="${orders.status == 0}">未审核</option>
+                        <option value="1" th:selected="${orders.status == 1}">已审核</option>
+                    </select>
+                </td>
+            </tr>
+            <tr height="30">
+                <td align="right">备注:</td>
+                <td colspan="5">
+                    <input type="text" name="remark" th:value="${orders.remark}" id="remark" style="width:780px;">
+                </td>
+            </tr>
+
+        </table>
+    </fieldset>
+    <table id="dgitem"  style="width:auto;height:300px" data-options="iconCls:'icon-edit',singleSelect:true,idField:'orderDetailId',showFooter:true" title="入库明细">
+        <thead>
+        <tr>
+            <th data-options="field:'orderDetailId',width:50" checkbox="true" >选择</th>
+            <th data-options="field:'storageId',width:50,editor:'text'">仓库Id</th>
+            <th data-options="field:'materialId',width:50,editor:'text'">物料Id</th>
+            <th data-options="field:'storageName',width:150,align:'center',
+					editor:{
+						type:'combobox',
+						options:{
+							valueField:'storageCode',
+							textField:'storageName',
+							required:true
+						}
+					}">仓库名称</th>
+            <th data-options="field:'materialCode',width:150,align:'center',
+						editor:{
+							type:'combobox',
+							options:{
+								valueField:'code',
+								textField:'name',
+								required:true
+							}
+						}">物料编码</th>
+            <th data-options="field:'materialName',width:200,editor:'text',align:'center'">物料名称</th>
+            <th data-options="field:'style',width:150,editor:'text',align:'center'">规格型号</th>
+            <th data-options="field:'materialUnit',width:60,editor:'text',align:'center'">单位</th>
+            <th data-options="field:'orderId',width:150,editor:'text',align:'center'">采购编码</th>
+            <th data-options="field:'batchNo',width:150,editor:'text',align:'center'">批号</th>
+            <th data-options="field:'orderCount',width:100,align:'center',editor:'text'">数量</th>
+            <th data-options="field:'orderFlag',width:40,editor:{type:'checkbox',options:{on:'冲红',off:'正常'}}">冲红</th>
+        </tr>
+        </thead>
+    </table>
+</form>
+</body>
+</html>

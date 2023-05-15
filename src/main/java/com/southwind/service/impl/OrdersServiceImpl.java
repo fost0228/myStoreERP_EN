@@ -20,13 +20,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author Forest
@@ -39,7 +40,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     private OrdersMapper ordersMapper;
 
     @Autowired
-    private OrderDetailMapper   orderDetailMapper;
+    private OrderDetailMapper orderDetailMapper;
 
 //    @Autowired
 //    private OrderDetailMapper orderDetailMapper;
@@ -62,7 +63,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
 //            BeanUtils.copyProperties(orderDetail, ordersVO);
 //            ordersVOS.add(ordersVO);
 //    }
-        Long index = (pageObject.getCurrent() -1)*pageObject.getSize();
+        Long index = (pageObject.getCurrent() - 1) * pageObject.getSize();
         Long length = pageObject.getSize();
         List<OrdersVO> ordersVOList = this.ordersMapper.ordersVOList(index, length, form);
         PageObject result = new PageObject();
@@ -77,7 +78,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     public boolean batchDelete(String orderNoArr) {
         String[] split = orderNoArr.split(",");
         List<String> orderNoList = new ArrayList<>();
-        for(String orderNo: split){
+        for (String orderNo : split) {
 //            QueryWrapper<Orders> ordersQueryWrapper = new QueryWrapper<>();
 //            ordersQueryWrapper.eq("order_no", orderNo);
 //            int delete = this.ordersMapper.delete(ordersQueryWrapper);
@@ -91,9 +92,9 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         OrdersMO ordersMO = new OrdersMO();
         ordersMO.setOrderNos(orderNoList);
         int i = this.ordersMapper.batchDelete(ordersMO);
-        if(i == 0) return false;
+        if (i == 0) return false;
         int i1 = this.orderDetailMapper.batchDelete(ordersMO);
-        if(i1 == 0) return false;
+        if (i1 == 0) return false;
         return true;
     }
 
@@ -101,13 +102,13 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     public boolean batchVerify(String orderNoArr) {
         String[] split = orderNoArr.split(",");
         List<String> orderNoList = new ArrayList<>();
-        for(String orderNo: split){
+        for (String orderNo : split) {
             orderNoList.add(orderNo);
         }
         OrdersMO ordersMO = new OrdersMO();
         ordersMO.setOrderNos(orderNoList);
         int i = this.ordersMapper.batchVerify(ordersMO);
-        if(i == 0) return false;
+        if (i == 0) return false;
         return true;
     }
 
@@ -115,13 +116,13 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     public boolean batchInvalid(String orderNoArr) {
         String[] split = orderNoArr.split(",");
         List<String> orderNoList = new ArrayList<>();
-        for(String orderNo: split){
+        for (String orderNo : split) {
             orderNoList.add(orderNo);
         }
         OrdersMO ordersMO = new OrdersMO();
         ordersMO.setOrderNos(orderNoList);
         int i = this.ordersMapper.batchInvalid(ordersMO);
-        if(i == 0) return false;
+        if (i == 0) return false;
         return true;
     }
 
@@ -131,13 +132,83 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         Orders orders = new Orders();
         BeanUtils.copyProperties(ordersAddForm, orders);
         Integer count = this.ordersMapper.selectCount(null);
-        orders.setOrderNo(CommonUtils.createOrderNo(count,ordersAddForm.getOrderType()));
+        orders.setOrderNo(CommonUtils.createOrderNo(count, ordersAddForm.getOrderType()));
         orders.setEmployeeName("Jack");
-        if(StringUtils.isNotBlank(ordersAddForm.getOrderDate())){
+        if (StringUtils.isNotBlank(ordersAddForm.getOrderDate())) {
             orders.setOrderDate(CommonUtils.parseString2(ordersAddForm.getOrderDate()));
-        }else{
+        } else {
             orders.setOrderDate(LocalDateTime.now());
         }
-        return false;
+        int insert = this.ordersMapper.insert(orders);
+        if (insert == 0) return false;
+        //save orderDetail
+        String orderDetailsStr = ordersAddForm.getOrderDetailsStr();
+        String[] split = orderDetailsStr.split("&");
+        for (String orderDetailStr : split) {
+            String[] split1 = orderDetailStr.split(",");
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setMaterialId(Integer.parseInt(split1[0]));
+            orderDetail.setMaterialCode(split1[1]);
+            orderDetail.setMaterialName(split1[2]);
+            orderDetail.setStyle(split1[3]);
+            orderDetail.setUnitName(split1[4]);
+            orderDetail.setOrderId(split1[5]);
+            orderDetail.setBatchNo(split1[6]);
+            orderDetail.setOrderCount(new BigDecimal(split1[7]));
+            orderDetail.setOrderFlag(split1[8]);
+            orderDetail.setStorageId(Integer.parseInt(split1[9]));
+            orderDetail.setStorageName(split1[10]);
+            orderDetail.setOrderNo(orders.getOrderNo());
+            int insert1 = this.orderDetailMapper.insert(orderDetail);
+            if (insert1 == 0) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean update(OrdersAddForm ordersAddForm) {
+        //update orders
+        Orders orders = new Orders();
+        BeanUtils.copyProperties(ordersAddForm, orders);
+        Integer count = this.ordersMapper.selectCount(null);
+
+        orders.setEmployeeName("Jack");
+        if (StringUtils.isNotBlank(ordersAddForm.getOrderDate())) {
+            orders.setOrderDate(CommonUtils.parseString2(ordersAddForm.getOrderDate()));
+        } else {
+            orders.setOrderDate(LocalDateTime.now());
+        }
+        QueryWrapper<Orders> ordersQueryWrapper = new QueryWrapper<>();
+        ordersQueryWrapper.eq("order_no", orders.getOrderNo());
+        int updateById = this.ordersMapper.update(orders, ordersQueryWrapper);
+        if (updateById == 0) return false;
+        //update orderDetail
+        QueryWrapper<OrderDetail> orderDetailQueryWrapper1 = new QueryWrapper<>();
+        orderDetailQueryWrapper1.eq("order_no", orders.getOrderNo());
+        int delete = this.orderDetailMapper.delete(orderDetailQueryWrapper1);
+        if (delete == 0) return false;
+        String orderDetailsStr = ordersAddForm.getOrderDetailsStr();
+        String[] split = orderDetailsStr.split("&");
+        for (String orderDetailStr : split) {
+            String[] split1 = orderDetailStr.split(",");
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setMaterialId(Integer.parseInt(split1[0]));
+            orderDetail.setMaterialCode(split1[1]);
+            orderDetail.setMaterialName(split1[2]);
+            orderDetail.setStyle(split1[3]);
+            orderDetail.setUnitName(split1[4]);
+            orderDetail.setOrderId(split1[5]);
+            orderDetail.setBatchNo(split1[6]);
+            orderDetail.setOrderCount(new BigDecimal(split1[7]));
+            orderDetail.setOrderFlag(split1[8]);
+            orderDetail.setStorageId(Integer.parseInt(split1[9]));
+            orderDetail.setStorageName(split1[10]);
+            orderDetail.setOrderNo(orders.getOrderNo());
+            QueryWrapper<OrderDetail> orderDetailQueryWrapper = new QueryWrapper<>();
+            orderDetailQueryWrapper.eq("order_no", orders.getOrderNo());
+            int insert1 = this.orderDetailMapper.update(orderDetail, orderDetailQueryWrapper);
+            if (insert1 == 0) return false;
+        }
+        return true;
     }
 }

@@ -1,6 +1,7 @@
 package com.southwind.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.southwind.entity.Material;
 import com.southwind.entity.Orders;
 import com.southwind.entity.Storage;
@@ -105,8 +106,27 @@ public class OrdersController {
     @PostMapping("/save")
     @ResponseBody
     public String save(OrdersAddForm ordersAddForm){
+        boolean save = this.ordersService.save(ordersAddForm);
+        if(save) return "success";
+        return "fail";
+    }
 
-        return null;
+    @GetMapping("/edit")
+    public String edit(String orderNo, Model model){
+        QueryWrapper<Orders> ordersQueryWrapper = new QueryWrapper<>();
+        ordersQueryWrapper.eq("order_no", orderNo);
+        Orders orders = this.ordersService.getOne(ordersQueryWrapper);
+        model.addAttribute("orders", orders);
+        model.addAttribute("supplierList", this.supplierService.list());
+        return "ordersEdit";
+    }
+
+    @PostMapping("/update")
+    @ResponseBody
+    public String update(OrdersAddForm ordersAddForm){
+        boolean save = this.ordersService.update(ordersAddForm);
+        if(save) return "success";
+        return "fail";
     }
 }
 
