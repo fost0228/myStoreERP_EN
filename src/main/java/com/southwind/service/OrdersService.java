@@ -23,6 +23,9 @@ public interface OrdersService extends IService<Orders> {
     public boolean batchDelete(String orderNoArr);
     public boolean batchVerify(String orderNoArr);
     public boolean batchInvalid(String orderNoArr);
+    public boolean delete(String orderNo);
+    public boolean verify(String orderNo);
+    public boolean invalid(String orderNo);
     public boolean save(OrdersAddForm ordersAddForm);
     public boolean update(OrdersAddForm ordersAddForm);
 }

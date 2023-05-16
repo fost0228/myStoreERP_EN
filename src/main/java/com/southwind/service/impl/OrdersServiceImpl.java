@@ -127,6 +127,41 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     }
 
     @Override
+    public boolean delete(String orderNo) {
+        QueryWrapper<Orders> ordersQueryWrapper = new QueryWrapper<>();
+        ordersQueryWrapper.eq("order_no", orderNo);
+        int delete = this.ordersMapper.delete(ordersQueryWrapper);
+        if (delete == 0) return false;
+        QueryWrapper<OrderDetail> orderDetailQueryWrapper = new QueryWrapper<>();
+        orderDetailQueryWrapper.eq("order_no", orderNo);
+        int delete1 = this.orderDetailMapper.delete(orderDetailQueryWrapper);
+        if (delete1 == 0) return false;
+        return true;
+    }
+
+    @Override
+    public boolean verify(String orderNo) {
+        QueryWrapper<Orders> ordersQueryWrapper = new QueryWrapper<>();
+        ordersQueryWrapper.eq("order_no", orderNo);
+        Orders orders = this.ordersMapper.selectOne(ordersQueryWrapper);
+        orders.setStatus(1);
+        int update = this.ordersMapper.update(orders, ordersQueryWrapper);
+        if(update == 0) return false;
+        return true;
+    }
+
+    @Override
+    public boolean invalid(String orderNo) {
+        QueryWrapper<Orders> ordersQueryWrapper = new QueryWrapper<>();
+        ordersQueryWrapper.eq("order_no", orderNo);
+        Orders orders = this.ordersMapper.selectOne(ordersQueryWrapper);
+        orders.setInvalid(0);
+        int update = this.ordersMapper.update(orders, ordersQueryWrapper);
+        if(update == 0) return false;
+        return true;
+    }
+
+    @Override
     public boolean save(OrdersAddForm ordersAddForm) {
         //save orders
         Orders orders = new Orders();
@@ -154,8 +189,12 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
             orderDetail.setUnitName(split1[4]);
             orderDetail.setOrderId(split1[5]);
             orderDetail.setBatchNo(split1[6]);
-            orderDetail.setOrderCount(new BigDecimal(split1[7]));
             orderDetail.setOrderFlag(split1[8]);
+            if (orderDetail.getOrderFlag().equals("冲红")) {
+                orderDetail.setOrderCount(new BigDecimal("-" + split1[7]));
+            } else {
+                orderDetail.setOrderCount(new BigDecimal(split1[7]));
+            }
             orderDetail.setStorageId(Integer.parseInt(split1[9]));
             orderDetail.setStorageName(split1[10]);
             orderDetail.setOrderNo(orders.getOrderNo());
@@ -199,8 +238,12 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
             orderDetail.setUnitName(split1[4]);
             orderDetail.setOrderId(split1[5]);
             orderDetail.setBatchNo(split1[6]);
-            orderDetail.setOrderCount(new BigDecimal(split1[7]));
             orderDetail.setOrderFlag(split1[8]);
+            if (orderDetail.getOrderFlag().equals("冲红")) {
+                orderDetail.setOrderCount(new BigDecimal("-" + split1[7]));
+            } else {
+                orderDetail.setOrderCount(new BigDecimal(split1[7]));
+            }
             orderDetail.setStorageId(Integer.parseInt(split1[9]));
             orderDetail.setStorageName(split1[10]);
             orderDetail.setOrderNo(orders.getOrderNo());

@@ -128,5 +128,36 @@ public class OrdersController {
         if(save) return "success";
         return "fail";
     }
+
+    @PostMapping("/delete")
+    @ResponseBody
+    public String delete(String orderNo) {
+        boolean batchDelete = this.ordersService.delete(orderNo);
+        if (batchDelete) return "success";
+        return "fail";
+    }
+
+    @PostMapping("/verify")
+    @ResponseBody
+    public String verify(String orderNo) {
+        boolean b = this.ordersService.verify(orderNo);
+        if (b) return "success";
+        return "fail";
+    }
+
+    @PostMapping("/invalid")
+    @ResponseBody
+    public String invalid(String orderNo) {
+        boolean b = this.ordersService.invalid(orderNo);
+        if (b) return "success";
+        return "fail";
+    }
+
+
+    @RequestMapping("/returnList")
+    public String returnList(PageObject pageObject, Model model){
+
+        return "ordersReturnList";
+    }
 }
 
