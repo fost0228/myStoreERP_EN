@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>采购退货新增</title>
+    <th:block th:include="common.html :: source"></th:block>
+</head>
+<body>
+<script type="text/javascript">
+    $(function(){
+        //初始化
+        $('#dgitem').datagrid({
+            toolbar:[{
+                text:'添加',
+                iconCls:'icon-add',
+                handler:function(){
+                    $('#dgitem').datagrid('appendRow',{});
+                    //获取当前行的索引（最后一行）
+                    lastIndex = $('#dgitem').datagrid('getRows').length-1;
+                    //选中当前行
+                    $('#dgitem').datagrid('selectRow', lastIndex);
+                    //设置为可以编辑状态
+                    $('#dgitem').datagrid('beginEdit', lastIndex);
+                    storageName = getEditRow(lastIndex,'storageName');
+                    $(storageName.target).combogrid({
+                        panelWidth:300,
+                        value:'storageName',
+                        idField:'storageName',
+                        textField:'storageName',
+                        columns:[
+                            [
+                            {field:'storageId',title:'仓库id',width:60},
+                            {field:'storageCode',title:'仓库编号',width:100},
+                            {field:'storageName',title:'库存名称',width:120}
+                        ]
+                        ],
+                        onSelect:function(idx,row) {
+                            storageId = getEditRow(lastIndex,'storageId');
+                            $(storageId.target).val(row.storageId);
+                            m_storageId=row.storageId;
+                        }
+                    });
+                    //加载仓库下拉框的数据
+                    $.get(
+                        "/orders/storageList",
+                        function(data){
+                            $(storageName.target).combogrid('grid').datagrid('loadData', data);
+                        },
+                        'json'
+                    );
+
+                    orderId = getEditRow(lastIndex,'orderId');
+                    $(orderId.target).combogrid({
+                        panelWidth:750,
+                        value:'orderId',
+                        idField:'orderId',
+                        textField:'orderId',
+                        columns:[
+                            [
+                            {field:'orderId',title:'订单号',width:100},
+                            {field:'batchNo',title:'批号',width:140},
+                            {field:'orderCount',title:'库存数量',width:70},
+                            {field:'materialId',title:'ID',width:60},
+                            {field:'materialCode',title:'编码',width:60},
+                            {field:'materialName',title:'名称',width:120},
+                            {field:'style',title:'规格',width:80},
+                            {field:'materialUnit',title:'单位',width:60}
+                        ]
+                        ],onSelect:function(idx,row) {
+                            batchNo = getEditRow(lastIndex,'batchNo');
+                            $(batchNo.target).val(row.batchNo);
+                            orderCount = getEditRow(lastIndex,'orderCount');
+                            $(orderCount.target).val(row.orderCount);
+                            materialId = getEditRow(lastIndex,'materialId');
+                            $(materialId.target).val(row.materialId);
+                            materialcode = getEditRow(lastIndex,'materialCode');
+                            $(materialcode.target).val(row.materialCode);
+                            materialname = getEditRow(lastIndex,'materialName');
+                            $(materialname.target).val(row.materialName);
+                            style = getEditRow(lastIndex,'style');
+                            $(style.target).val(row.style);
+                            materialUnit = getEditRow(lastIndex,'materialUnit');
+                            $(materialUnit.target).val(row.materialUnit);
+                        }
+                    });
+                    $.get(
+                        '/orders/ordersDetailList',
+                        function(data){
+                            console.log(data)
+                            $(orderId.target).combogrid('grid').datagrid('loadData', data);
+                        },
+                        'json'
+                    );
+                }
+            },'-',{
+                text:'删除',
+                iconCls:'icon-remove',
+                handler:function(){
+                    if($("#status").val() !="0"){
+                        $.messager.alert("操作提示", "已审核的单据不能删除！","error");
+                        return false;
+                    }
+                    if($("#invalid").val() =="0"){
+                        $.messager.alert("操作提示", "已作废的单据不能删除！","error");
+                        return false;
+                    }
+                    //获取选中的行
+                    var row = $('#dgitem').datagrid('getSelections');
+                    if(row == null) return false;
+                    if(row.length == 0) return false;
+                    $.messager.confirm('提示','确定删除？',function(res){
+                        if(res){
+                            for(var i = 0;i < row.length; i++){
+                                var index = $('#dgitem').datagrid('getRowIndex', row[i]);
+                                $('#dgitem').datagrid('deleteRow', index);
+                            }
+                            lastIndex = 0;
+                        }
+                    })
+                }
+            }],
+            onClickRow:function(rowIndex){
+                if($("#status").val() != "0"){
+                    $.messager.alert("操作提示", "已审核的单据不能修改！","error");
+                    return false;
+                }
+                if($("#invalid").val() == "0"){
+                    $.messager.alert("操作提示", "已作废的单据不能修改！","error");
+                    return false;
+                }
+                //接受修改
+                $('#dgitem').datagrid('acceptChanges');
+                $('#dgitem').datagrid('selectRow', rowIndex);
+                $('#dgitem').datagrid('beginEdit', rowIndex);
+                lastIndex=rowIndex;
+                storageName = getEditRow(lastIndex,'storageName');
+                var row = $('#dgitem').datagrid('getSelected');
+                $(storageName.target).combogrid({
+                    panelWidth:300,
+                    value:'storageName',
+                    idField:'storageName',
+                    textField:'storageName',
+                    columns:[
+                        [
+                            {field:'storageId',title:'仓库id',width:60},
+                            {field:'storageCode',title:'仓库编号',width:100},
+                            {field:'storageName',title:'库存名称',width:120}
+                        ]
+                    ],
+                    onSelect:function(idx,row) {
+                        storageId = getEditRow(lastIndex,'storageId');
+                        $(storageId.target).val(row.storageId);
+                        m_storageId=row.storageId;
+                    }
+                });
+                //加载仓库下拉框的数据
+                $.get(
+                    "/orders/storageList",
+                    function(data){
+                        $(storageName.target).combogrid('grid').datagrid('loadData', data);
+                    },
+                    'json'
+                );
+
+                orderId = getEditRow(lastIndex,'orderId');
+                $(orderId.target).combogrid({
+                    panelWidth:750,
+                    value:'orderId',
+                    idField:'orderId',
+                    textField:'orderId',
+                    columns:[
+                        [
+                            {field:'orderId',title:'订单号',width:100},
+                            {field:'batchNo',title:'批号',width:140},
+                            {field:'orderCount',title:'库存数量',width:70},
+                            {field:'materialId',title:'ID',width:60},
+                            {field:'materialCode',title:'编码',width:60},
+                            {field:'materialName',title:'名称',width:120},
+                            {field:'style',title:'规格',width:80},
+                            {field:'materialUnit',title:'单位',width:60}
+                        ]
+                    ],onSelect:function(idx,row) {
+                        batchNo = getEditRow(lastIndex,'batchNo');
+                        $(batchNo.target).val(row.batchNo);
+                        orderCount = getEditRow(lastIndex,'orderCount');
+                        $(orderCount.target).val(row.orderCount);
+                        materialId = getEditRow(lastIndex,'materialId');
+                        $(materialId.target).val(row.materialId);
+                        materialcode = getEditRow(lastIndex,'materialCode');
+                        $(materialcode.target).val(row.materialCode);
+                        materialname = getEditRow(lastIndex,'materialName');
+                        $(materialname.target).val(row.materialName);
+                        style = getEditRow(lastIndex,'style');
+                        $(style.target).val(row.style);
+                        materialUnit = getEditRow(lastIndex,'materialUnit');
+                        $(materialUnit.target).val(row.materialUnit);
+                    }
+                });
+                $.get(
+                    '/orders/ordersDetailList',
+                    function(data){
+                        console.log(data)
+                        $(orderId.target).combogrid('grid').datagrid('loadData', data);
+                    },
+                    'json'
+                );
+
+                $(storageName.target).combogrid('setValue',row.storageName);
+                $(orderId.target).combogrid('setValue',row.orderId);
+            }
+        });
+        //隐藏字段
+        $('#dgitem').datagrid('hideColumn','storageId');
+        $('#dgitem').datagrid('hideColumn','materialId');
+    });
+
+    function getEditRow(lastIndex,field){
+        return category = $('#dgitem').datagrid('getEditor', {
+            index : lastIndex,
+            field : field
+        });
+    }
+
+    function save(){
+        $('#dgitem').datagrid('acceptChanges');
+        var rows = $("#dgitem").datagrid("getRows");
+        if(rows.length <= 0){
+            $.messager.alert("操作提示", "请添加退货明细数据！","error");
+            return false;
+        }
+
+        let str = "";
+        let batchNoStr = "";
+        let orderCountStr = "";
+        let flag = false;
+        for(let i = 0;i < rows.length;i++)
+        {
+            if(rows[i].orderFlag == '正常') flag = true;
+
+            if(rows[i].storageId=="" || rows[i].materialCode=="" || rows[i].materialName=="" || rows[i].style=="" || rows[i].materialUnit=="" || rows[i].orderId=="" || rows[i].batchNo=="" || rows[i].orderCount=="")
+            {
+                $.messager.alert("操作提示", "第"+(i+1)+"行的数据有误！","error");
+                return false;
+            }
+
+            batchNoStr += rows[i].batchNo + ","
+            orderCountStr += rows[i].orderCount + ","
+
+            str +=
+                rows[i].materialId + ","
+                + rows[i].materialCode + ","
+                + rows[i].materialName + ","
+                + rows[i].style + ","
+                + rows[i].materialUnit + ","
+                + rows[i].orderId + ","
+                + rows[i].batchNo + ","
+                + rows[i].orderCount + ","
+                + rows[i].orderFlag + ","
+                + rows[i].storageId + ","
+                + rows[i].storageName + "&"
+        }
+
+        let orderObj = {
+            "orderNo":$("#orderNo").val(),
+            "orderDate":$("#orderDate").datebox("getValue"),
+            "supplierId":$("#supplierId").val(),
+            "orderType":$("#orderType").val(),
+            "invalid":$("#invalid").val(),
+            "status":$("#status").val(),
+            "remark":$("#remark").val(),
+            "orderDetailsStr":str
+        }
+
+        if(flag){
+            $.post(
+                "/orders/checkOrderCount?batchNoStr=" + batchNoStr + "&orderCountStr=" + orderCountStr,
+                function(data){
+                    if(data == 'success'){
+                        $.post(
+                            "/orders/return",
+                            orderObj,
+                            function(data){
+                                if(data == 'success'){
+                                    $.messager.alert("操作提示", "退货成功！","info",function () {
+                                        var url = "/orders/returnList";
+                                        var title="采购退货单";
+                                        addTab1(title, url);
+                                    });
+                                }else{
+                                    $.messager.alert("操作提示", "退货失败！","error");
+                                }
+                            }
+                        );
+                    }else{
+                        $.messager.alert("操作提示", "库存不足！","error");
+                    }
+                }
+            );
+        } else {
+            $.post(
+                "/orders/return",
+                orderObj,
+                function(data){
+                    if(data == 'success'){
+                        $.messager.alert("操作提示", "退货成功！","info",function () {
+                            var url = "/orders/returnList";
+                            var title="采购退货单";
+                            addTab1(title, url);
+                        });
+                    }else{
+                        $.messager.alert("操作提示", "退货失败！","error");
+                    }
+                }
+            );
+        }
+
+    }
+
+</script>
+<form theme="simple" action="/admin/order/save" method="post">
+    <table width="100%" border="0" cellpadding="0" cellspacing="0" BACKGROUND="images/maintitle.jpg">
+        <tr>
+            <td align="left">
+                <a class="easyui-linkbutton" plain="true" icon="icon-save" href="javascript:void(0);" onclick="save()">保存</a>
+            </td>
+        </tr>
+    </table>
+    <input type="hidden" name="orderType" id="orderType" value="2">
+    <fieldset>
+        <legend>单据信息</legend>
+        <table width="980" height="120">
+            <tr height="30">
+                <td align="right" width="90" style="vertical-align:top">退货日期:</td>
+                <td width="200" style="vertical-align:top"><input type="text" class="easyui-datebox" name="orderDate" id="orderDate" style="width:155px"></td>
+                <td align="right" style="vertical-align:top">供应商:</td>
+                <td style="vertical-align:top" colspan="3">
+                    <select name="supplierId" id="supplierId" style="width:520px">
+                        <option th:each="supplier:${supplierList}"
+                                th:value="${supplier.supplierId}"
+                                th:text="'('+${supplier.supplierCode}+')'+${supplier.supplierName}"
+                        ></option>
+                    </select>
+                </td>
+
+            </tr>
+            <tr height="30">
+                <td align="right" width="80">单据编号:</td>
+                <td width="200"><input type="text" name="orderNo" disabled id="orderNo" style="width:155px"/></td>
+                <td align="right">状态:</td>
+                <td>
+                    <select name = "invalid" id="invalid" disabled style="width:155px">
+                        <option value="1" selected>正常</option>
+                        <option value="0">作废</option>
+                    </select>
+                </td>
+                <td align="right">审核状态:</td>
+                <td>
+                    <select name = "status" id="status" disabled style="width:155px" >
+                        <option value="0" selected>未审核</option>
+                        <option value="1">已审核</option>
+                    </select>
+                </td>
+            </tr>
+            <tr height="30">
+                <td align="right">备注:</td>
+                <td colspan="5">
+                    <input type="text" name="remark" id="remark" style="width:780px;">
+                </td>
+            </tr>
+
+        </table>
+    </fieldset>
+    <table id="dgitem"  style="width:auto;height:300px" data-options="iconCls:'icon-edit',singleSelect:true,idField:'orderDetailId',showFooter:true" title="退货明细">
+        <thead>
+        <tr>
+            <th data-options="field:'orderDetailId',width:50" checkbox="true" >选择</th>
+            <th data-options="field:'storageId',width:50,editor:'text'">仓库Id</th>
+            <th data-options="field:'materialId',width:50,editor:'text'">物料Id</th>
+            <th data-options="field:'storageName',width:150,align:'center',
+					editor:{
+						type:'combobox',
+						options:{
+							valueField:'storageCode',
+							textField:'storageName',
+							required:true
+						}
+					}">仓库名称</th>
+            <th data-options="field:'orderId',width:150,align:'center',
+						editor:{
+							type:'combobox',
+							options:{
+								valueField:'code',
+								textField:'name',
+								required:true
+							}
+						}">采购编码</th>
+            <th data-options="field:'batchNo',width:150,editor:'text',align:'center'">生产批号</th>
+            <th data-options="field:'materialCode',width:150,align:'center',editor:'text'">物料编码</th>
+            <th data-options="field:'materialName',width:200,editor:'text',align:'center'">物料名称</th>
+            <th data-options="field:'style',width:150,editor:'text',align:'center'">规格型号</th>
+            <th data-options="field:'materialUnit',width:60,editor:'text',align:'center'">单位</th>
+            <th data-options="field:'orderCount',width:100,align:'center',editor:'text'">数量</th>
+            <th data-options="field:'orderFlag',width:40,editor:{type:'checkbox',options:{on:'冲红',off:'正常'}}">冲红</th>
+        </tr>
+        </thead>
+    </table>
+</form>
+</body>
+</html>

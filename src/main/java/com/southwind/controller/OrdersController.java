@@ -3,6 +3,7 @@ package com.southwind.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.southwind.entity.Material;
+import com.southwind.entity.OrderDetail;
 import com.southwind.entity.Orders;
 import com.southwind.entity.Storage;
 import com.southwind.form.MaterialInputSearchForm;
@@ -155,9 +156,33 @@ public class OrdersController {
 
 
     @RequestMapping("/returnList")
-    public String returnList(PageObject pageObject, Model model){
-
+    public String returnList(PageObject pageObject, Model model, OrdersSearchForm form){
+        model.addAttribute("page", this.ordersService.ordersReturnList(pageObject,null));
+        model.addAttribute("supplierList", this.supplierService.list());
+        model.addAttribute("form", form);
         return "ordersReturnList";
     }
+
+    @GetMapping("/returnInit")
+    public String returnInit(Model model) {
+        model.addAttribute("supplierList", this.supplierService.list());
+        return "ordersReturnAdd";
+    }
+
+    @GetMapping("/ordersDetailList")
+    @ResponseBody
+    public List<OrderDetail> ordersDetailList(){
+        return this.orderDetailService.orderDetailList();
+    }
+
+
+    @PostMapping("/return")
+    @ResponseBody
+    public String ordersReturn(OrdersAddForm ordersAddForm){
+        boolean ordersReturn = this.ordersService.ordersReturn(ordersAddForm);
+        if(ordersReturn) return "success";
+        return "fail";
+    }
+
 }
 

@@ -295,13 +295,13 @@
         <td width="200" style="vertical-align:top"><input type="text" class="easyui-datebox" name="orderDate" id="orderDate" style="width:155px"></td>
         <td align="right" style="vertical-align:top">供应商:</td>
         <td style="vertical-align:top" colspan="3">
-<!--          <select name="supplierId" id="supplierId" style="width:520px">-->
-<!--            <option-->
-<!--                    th:each="supplier:${supplierList}"-->
-<!--                    th:value="${supplier.supplierId}"-->
-<!--                    th:text="'('+${supplier.supplierCode}+')'+${supplier.supplierName}"-->
-<!--            ></option>-->
-<!--          </select>-->
+          <select name="supplierId" id="supplierId" style="width:520px">
+            <option
+                    th:each="supplier:${supplierList}"
+                    th:value="${supplier.supplierId}"
+                    th:text="'('+${supplier.supplierCode}+')'+${supplier.supplierName}"
+            ></option>
+          </select>
         </td>
 
       </tr>

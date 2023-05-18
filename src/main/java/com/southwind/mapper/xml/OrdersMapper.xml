@@ -2,13 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.southwind.mapper.OrdersMapper">
 
+    <select id="ordersReturnVOList" resultType="OrdersVO">
+        select o.order_type, o.order_no, s.supplier_name, o.employee_name, o.order_date,
+        o.invalid, o.status,od.material_name, od.material_code,od.batch_no,
+        od.style, od.storage_name, od.unit_name, od.order_count,od.order_flag,
+        o.verify_person, o.verify_date from orders o, order_detail od, supplier s
+        <where>
+            o.order_type = 2 and o.order_no = od.order_no and o.supplier_id = s.supplier_id
+
+        </where>
+        limit #{param1},#{param2}
+    </select>
+
     <select id="ordersVOList" resultType="OrdersVO">
         select o.order_type, o.order_no, s.supplier_name, o.employee_name, o.order_date,
-               o.invalid, o.status,od.material_name, od.material_code,od.batch_no,
-               od.style, od.storage_name, od.unit_name, od.order_count,od.order_flag,
-               o.verify_person, o.verify_date from orders o, order_detail od, supplier s
+        o.invalid, o.status,od.material_name, od.material_code,od.batch_no,
+        od.style, od.storage_name, od.unit_name, od.order_count,od.order_flag,
+        o.verify_person, o.verify_date from orders o, order_detail od, supplier s
         <where>
-            o.order_no = od.order_no and o.supplier_id = s.supplier_id
+            o.order_type = 1 and o.order_no = od.order_no and o.supplier_id = s.supplier_id
             <if test="param3.supplierId != null and param3.supplierId != ''">
                 and o.supplier_Id = #{param3.supplierId}
             </if>
@@ -25,7 +37,7 @@
                 and o.order_date between #{param3.orderDate1} and #{param3.orderDate2}
             </if>
         </where>
-         limit #{param1},#{param2}
+        limit #{param1},#{param2}
     </select>
 
     <select id="ordersVOCount" resultType="java.lang.Long">
@@ -47,6 +59,14 @@
             <if test="orderDate1 !=null and orderDate1 !='' and orderDate2 !=null and orderDate2 !=''">
                 and o.order_date between #{param3.orderDate1} and #{param3.orderDate2}
             </if>
+        </where>
+
+
+    </select>
+    <select id="ordersReturnVOCount" resultType="java.lang.Long">
+        select count(*) from orders o, order_detail od, supplier s
+        <where>
+            o.order_type = 2 and o.order_no = od.order_no and o.supplier_id = s.supplier_id
         </where>
 
 

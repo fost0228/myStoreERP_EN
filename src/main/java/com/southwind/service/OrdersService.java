@@ -20,6 +20,7 @@ import java.util.List;
  */
 public interface OrdersService extends IService<Orders> {
     public PageObject ordersList(PageObject pageObject, OrdersSearchForm form);
+    public PageObject ordersReturnList(PageObject pageObject, OrdersSearchForm form);
     public boolean batchDelete(String orderNoArr);
     public boolean batchVerify(String orderNoArr);
     public boolean batchInvalid(String orderNoArr);
@@ -28,4 +29,5 @@ public interface OrdersService extends IService<Orders> {
     public boolean invalid(String orderNo);
     public boolean save(OrdersAddForm ordersAddForm);
     public boolean update(OrdersAddForm ordersAddForm);
+    public boolean ordersReturn(OrdersAddForm ordersAddForm);
 }

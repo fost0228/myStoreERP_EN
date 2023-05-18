@@ -49,20 +49,6 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
 
     @Override
     public PageObject ordersList(PageObject pageObject, OrdersSearchForm form) {
-//        ArrayList<OrdersVO> ordersVOS = new ArrayList<>();
-//        List<Orders> orders = this.ordersMapper.selectList(null);
-//        for(Orders order : orders){
-//            OrdersVO ordersVO = new OrdersVO();
-//            BeanUtils.copyProperties(order, ordersVO);
-//            Supplier supplier = this.supplierMapper.selectById(order.getSupplierId());
-//            ordersVO.setSupplierName(supplier.getSupplierName());
-//            QueryWrapper<OrderDetail> queryWrapper = new QueryWrapper<>();
-//            queryWrapper.eq("order_no", order.getOrderNo());
-//            List<OrderDetail> orderDetailList = this.orderDetailMapper.selectList(queryWrapper);
-//            OrderDetail orderDetail = orderDetailList.get(0);
-//            BeanUtils.copyProperties(orderDetail, ordersVO);
-//            ordersVOS.add(ordersVO);
-//    }
         Long index = (pageObject.getCurrent() - 1) * pageObject.getSize();
         Long length = pageObject.getSize();
         List<OrdersVO> ordersVOList = this.ordersMapper.ordersVOList(index, length, form);
@@ -75,18 +61,23 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     }
 
     @Override
+    public PageObject ordersReturnList(PageObject pageObject, OrdersSearchForm form) {
+        Long index = (pageObject.getCurrent() - 1) * pageObject.getSize();
+        Long length = pageObject.getSize();
+        List<OrdersVO> ordersVOList = this.ordersMapper.ordersReturnVOList(index, length, form);
+        PageObject result = new PageObject();
+        result.setData(ordersVOList);
+        result.setSize(pageObject.getSize());
+        result.setCurrent(pageObject.getCurrent());
+        result.setTotal(this.ordersMapper.ordersReturnVOCount(form));
+        return result;
+    }
+
+    @Override
     public boolean batchDelete(String orderNoArr) {
         String[] split = orderNoArr.split(",");
         List<String> orderNoList = new ArrayList<>();
         for (String orderNo : split) {
-//            QueryWrapper<Orders> ordersQueryWrapper = new QueryWrapper<>();
-//            ordersQueryWrapper.eq("order_no", orderNo);
-//            int delete = this.ordersMapper.delete(ordersQueryWrapper);
-//            if(delete != 1) return false;
-//            QueryWrapper<OrderDetail> orderDetailQueryWrapper = new QueryWrapper<>();
-//            orderDetailQueryWrapper.eq("order_no", orderNo);
-//            int delete1 = this.orderDetailMapper.delete(orderDetailQueryWrapper);
-//            if(delete1 != 1) return false;
             orderNoList.add(orderNo);
         }
         OrdersMO ordersMO = new OrdersMO();
@@ -250,6 +241,54 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
             QueryWrapper<OrderDetail> orderDetailQueryWrapper = new QueryWrapper<>();
             orderDetailQueryWrapper.eq("order_no", orders.getOrderNo());
             int insert1 = this.orderDetailMapper.update(orderDetail, orderDetailQueryWrapper);
+            if (insert1 == 0) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean ordersReturn(OrdersAddForm ordersAddForm) {
+        //save orders
+        Orders orders = new Orders();
+        BeanUtils.copyProperties(ordersAddForm, orders);
+        Integer count = this.ordersMapper.selectCount(null);
+        orders.setOrderNo(CommonUtils.createOrderNo(count, ordersAddForm.getOrderType()));
+        orders.setEmployeeName("Jack");
+        if (StringUtils.isNotBlank(ordersAddForm.getOrderDate())) {
+            orders.setOrderDate(CommonUtils.parseString2(ordersAddForm.getOrderDate()));
+        } else {
+            orders.setOrderDate(LocalDateTime.now());
+        }
+        int insert = this.ordersMapper.insert(orders);
+        if (insert == 0) return false;
+        //save orderDetail
+        String orderDetailsStr = ordersAddForm.getOrderDetailsStr();
+        String[] split = orderDetailsStr.split("&");
+        for (String orderDetailStr : split) {
+            String[] split1 = orderDetailStr.split(",");
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setMaterialId(Integer.parseInt(split1[0]));
+            orderDetail.setMaterialCode(split1[1]);
+            orderDetail.setMaterialName(split1[2]);
+            orderDetail.setStyle(split1[3]);
+            orderDetail.setUnitName(split1[4]);
+            orderDetail.setOrderId(split1[5]);
+            orderDetail.setBatchNo(split1[6]);
+            orderDetail.setOrderFlag(split1[8]);
+            if (orderDetail.getOrderFlag().equals("冲红")) {
+                orderDetail.setOrderCount(new BigDecimal("-" + split1[7]));
+            } else {
+                orderDetail.setOrderCount(new BigDecimal(split1[7]));
+                //update storage
+                BigDecimal orderCount = this.orderDetailMapper.getOrderCount(split1[6], 1);
+                BigDecimal subtract = orderCount.subtract(new BigDecimal(split1[7]));
+                int i = this.orderDetailMapper.updateOrderCount(subtract, split1[6], 1);
+                if(i == 0) return false;
+            }
+            orderDetail.setStorageId(Integer.parseInt(split1[9]));
+            orderDetail.setStorageName(split1[10]);
+            orderDetail.setOrderNo(orders.getOrderNo());
+            int insert1 = this.orderDetailMapper.insert(orderDetail);
             if (insert1 == 0) return false;
         }
         return true;

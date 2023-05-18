@@ -17,6 +17,17 @@
                     #{batchNo}
                 </foreach>
             </where>
-            batch_no in('cqy-2001-003')
+    </select>
+
+    <select id="orderDetailList" resultType="com.southwind.entity.OrderDetail">
+        select od.order_id, od.batch_no, od.order_count, od.material_id, od.material_name, od.material_code, od.style, od.unit_name from orders o, order_detail od where o.order_no = od.order_no and od.order_count > 0 and o.order_type = 1
+    </select>
+
+    <select id="updateOrderCount">
+        update order_detail od, orders o set order_count = #{param1} where o.order_no = od.order_no and od.batch_no = #{param2} and o.order_type = #{param3}
+    </select>
+
+    <select id="getOrderCount" resultType="java.math.BigDecimal">
+        select od.order_count from orders o, order_detail od where o.order_no = od.order_no and od.batch_no = #{param1} and o.order_type = #{param2}
     </select>
 </mapper>

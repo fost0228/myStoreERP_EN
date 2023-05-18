@@ -22,7 +22,9 @@ import java.util.List;
  */
 public interface OrdersMapper extends BaseMapper<Orders> {
     public List<OrdersVO> ordersVOList(Long index, Long length, OrdersSearchForm form);
+    public List<OrdersVO> ordersReturnVOList(Long index, Long length, OrdersSearchForm form);
     public Long ordersVOCount(OrdersSearchForm form);
+    public Long ordersReturnVOCount(OrdersSearchForm form);
     public int batchDelete(OrdersMO ordersMO);
     public int batchVerify(OrdersMO ordersMO);
     public int batchInvalid(OrdersMO ordersMO);
