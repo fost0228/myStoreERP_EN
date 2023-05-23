@@ -28,4 +28,6 @@ public interface OrdersMapper extends BaseMapper<Orders> {
     public int batchDelete(OrdersMO ordersMO);
     public int batchVerify(OrdersMO ordersMO);
     public int batchInvalid(OrdersMO ordersMO);
+    public List<OrdersVO> saleVOList(Long index, Long length, OrdersSearchForm form);
+    public Long saleVOCount(OrdersSearchForm form);
 }

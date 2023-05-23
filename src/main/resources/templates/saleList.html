@@ -21,18 +21,18 @@
                 let invalid = $("#invalid").val();
                 let status = $("#status").val();
                 let employeeName = $("#employeeName").val();
-                let orderDate = $("#orderDate").val();
+                let orderDate = $("#orderDate1").val();
                 let orderDate2 = $("#orderDate2").val();
-                location.href="/sale/list?current=" + current + "&size=" + size + "&supplierId=" + supplierId + "&invalid=" + invalid + "&status=" + status + "&employeeName=" + employeeName + "&orderDate=" + orderDate + "&orderDate2=" + orderDate2;
+                location.href="/sale/list?current=" + current + "&size=" + size + "&supplierId=" + supplierId + "&invalid=" + invalid + "&status=" + status + "&employeeName=" + employeeName + "&orderDate1=" + orderDate1 + "&orderDate2=" + orderDate2;
             },
             onSelectPage:function(current,size){
                 let supplierId = $("#supplierId").val();
                 let invalid = $("#invalid").val();
                 let status = $("#status").val();
                 let employeeName = $("#employeeName").val();
-                let orderDate = $("#orderDate").val();
+                let orderDate = $("#orderDate1").val();
                 let orderDate2 = $("#orderDate2").val();
-                location.href="/sale/list?current=" + current + "&size=" + size + "&supplierId=" + supplierId + "&invalid=" + invalid + "&status=" + status + "&employeeName=" + employeeName + "&orderDate=" + orderDate + "&orderDate2=" + orderDate2;
+                location.href="/sale/list?current=" + current + "&size=" + size + "&supplierId=" + supplierId + "&invalid=" + invalid + "&status=" + status + "&employeeName=" + employeeName + "&orderDate1=" + orderDate1 + "&orderDate2=" + orderDate2;
             }
         });
     });
@@ -187,10 +187,10 @@
             <td align="right">
                 供应商<select name="supplierId" id="supplierId" style="width:160px">
                 <option value="">不选择</option>
-                <option th:each="suppliser:${supplierList}"
-                        th:value="${suppliser.supplierId}"
-                        th:text="'('+${suppliser.supplierCode}+')'+${suppliser.supplierName}"
-                        th:selected="${suppliser.supplierId == ordersForm.supplierId}"
+                <option th:each="supplier:${supplierList}"
+                        th:value="${supplier.supplierId}"
+                        th:text="'('+${supplier.supplierCode}+')'+${supplier.supplierName}"
+                        th:selected="${supplier.supplierId == ordersForm.supplierId}"
                 ></option>
             </select>
                 单据状态
@@ -206,7 +206,7 @@
                     <option value="0" th:selected="${ordersForm.status==0}">未审核</option>
                 </select>
                 开单人<input type="text" name="employeeName" id="employeeName" th:value="${ordersForm.employeeName}" style="width:160px">
-                时间<input type="text" class="easyui-datebox" th:value="${ordersForm.orderDate}" name="orderDate" id="orderDate" style="width:160px">
+                时间<input type="text" class="easyui-datebox" th:value="${ordersForm.orderDate1}" name="orderDate1" id="orderDate" style="width:160px">
                 -<input type="text" class="easyui-datebox" th:value="${ordersForm.orderDate2}" name="orderDate2" id="orderDate2"  style="width:160px">
                 <a href="javascript:void(0);" class="easyui-linkbutton" plain="true" onclick="ordersSearch()" iconCls="icon-search" >搜索</a>
             </td>
