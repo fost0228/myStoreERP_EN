@@ -245,19 +245,34 @@
 
             batchNoStr += rows[i].batchNo + ","
             orderCountStr += rows[i].orderCount + ","
+           if(i == rows.length -1){
+               str +=
+                   rows[i].materialId + ","
+                   + rows[i].materialCode + ","
+                   + rows[i].materialName + ","
+                   + rows[i].style + ","
+                   + rows[i].materialUnit + ","
+                   + rows[i].orderId + ","
+                   + rows[i].batchNo + ","
+                   + rows[i].orderCount + ","
+                   + rows[i].orderFlag + ","
+                   + rows[i].storageId + ","
+                   + rows[i].storageName
+           }else{
+               str +=
+                   rows[i].materialId + ","
+                   + rows[i].materialCode + ","
+                   + rows[i].materialName + ","
+                   + rows[i].style + ","
+                   + rows[i].materialUnit + ","
+                   + rows[i].orderId + ","
+                   + rows[i].batchNo + ","
+                   + rows[i].orderCount + ","
+                   + rows[i].orderFlag + ","
+                   + rows[i].storageId + ","
+                   + rows[i].storageName + "&"
+           }
 
-            str +=
-                rows[i].materialId + ","
-                + rows[i].materialCode + ","
-                + rows[i].materialName + ","
-                + rows[i].style + ","
-                + rows[i].materialUnit + ","
-                + rows[i].orderId + ","
-                + rows[i].batchNo + ","
-                + rows[i].orderCount + ","
-                + rows[i].orderFlag + ","
-                + rows[i].storageId + ","
-                + rows[i].storageName + "&"
         }
 
         let orderObj = {

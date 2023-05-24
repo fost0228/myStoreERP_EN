@@ -42,7 +42,7 @@
                     });
                     //加载仓库下拉框的数据
                     $.get(
-                        "/sale/storageList",
+                        "/orders/storageList",
                         function(data){
                             $(storageName.target).combogrid('grid').datagrid('loadData', data);
                         },
@@ -155,7 +155,7 @@
                 });
                 //加载仓库下拉框的数据
                 $.get(
-                    "/sale/storageList",
+                    "/orders/storageList",
                     function(data){
                         $(storageName.target).combogrid('grid').datagrid('loadData', data);
                     },
@@ -197,7 +197,7 @@
                     }
                 });
                 $.get(
-                    '/sale/ordersDetailList',
+                    '/orders/ordersDetailList',
                     function(data){
                         console.log(data)
                         $(orderId.target).combogrid('grid').datagrid('loadData', data);
@@ -230,8 +230,6 @@
         }
 
         let str = "";
-        let batchNoStr = "";
-        let orderCountStr = "";
         let flag = false;
         for(let i = 0;i < rows.length;i++)
         {
@@ -246,73 +244,61 @@
             batchNoStr += rows[i].batchNo + ","
             orderCountStr += rows[i].orderCount + ","
 
-            str +=
-                rows[i].materialId + ","
-                + rows[i].materialCode + ","
-                + rows[i].materialName + ","
-                + rows[i].style + ","
-                + rows[i].materialUnit + ","
-                + rows[i].orderId + ","
-                + rows[i].batchNo + ","
-                + rows[i].orderCount + ","
-                + rows[i].orderFlag + ","
-                + rows[i].storageId + ","
-                + rows[i].storageName + "&"
+            if(i == rows.length -1){
+                str +=
+                    rows[i].materialId + ","
+                    + rows[i].materialCode + ","
+                    + rows[i].materialName + ","
+                    + rows[i].style + ","
+                    + rows[i].materialUnit + ","
+                    + rows[i].orderId + ","
+                    + rows[i].batchNo + ","
+                    + rows[i].orderCount + ","
+                    + rows[i].orderFlag + ","
+                    + rows[i].storageId + ","
+                    + rows[i].storageName
+            }else{
+                str +=
+                    rows[i].materialId + ","
+                    + rows[i].materialCode + ","
+                    + rows[i].materialName + ","
+                    + rows[i].style + ","
+                    + rows[i].materialUnit + ","
+                    + rows[i].orderId + ","
+                    + rows[i].batchNo + ","
+                    + rows[i].orderCount + ","
+                    + rows[i].orderFlag + ","
+                    + rows[i].storageId + ","
+                    + rows[i].storageName + "&"
+            }
         }
 
         let orderObj = {
             "orderNo":$("#orderNo").val(),
             "orderDate":$("#orderDate").datebox("getValue"),
             "supplierId":$("#supplierId").val(),
-            "orderType":$("#orderType").val(),
+            "orderType":3,
             "invalid":$("#invalid").val(),
             "status":$("#status").val(),
             "remark":$("#remark").val(),
             "orderDetailsStr":str
         }
+        $.post(
+            "/sale/save",
+            orderObj,
+            function(data){
+                if(data == 'success'){
+                    $.messager.alert("操作提示", "销售出库成功！","info",function () {
+                        var url = "/sale/list";
+                        var title="销售出库单";
+                        addTab1(title, url);
+                    });
+                }else{
+                    $.messager.alert("操作提示", "销售出库失败！","error");
+                }
+            }
+        );
 
-        if(flag){
-            $.post(
-                "/sale/checkOrderCount?batchNoStr=" + batchNoStr + "&orderCountStr=" + orderCountStr,
-                function(data){
-                    if(data == 'success'){
-                        $.post(
-                            "/sale/save",
-                            orderObj,
-                            function(data){
-                                if(data == 'success'){
-                                    $.messager.alert("操作提示", "销售出库成功！","info",function () {
-                                        var url = "/sale/list";
-                                        var title="销售出库单";
-                                        addTab1(title, url);
-                                    });
-                                }else{
-                                    $.messager.alert("操作提示", "销售出库失败！","error");
-                                }
-                            }
-                        );
-                    }else{
-                        $.messager.alert("操作提示", "库存不足！","error");
-                    }
-                }
-            );
-        } else {
-            $.post(
-                "/sale/save",
-                orderObj,
-                function(data){
-                    if(data == 'success'){
-                        $.messager.alert("操作提示", "销售出库成功！","info",function () {
-                            var url = "/sale/list";
-                            var title="销售出库单";
-                            addTab1(title, url);
-                        });
-                    }else{
-                        $.messager.alert("操作提示", "销售出库失败！","error");
-                    }
-                }
-            );
-        }
 
     }
 </script>
@@ -324,7 +310,6 @@
             </td>
         </tr>
     </table>
-    <input type="hidden" name="orderType" id="orderType" value="3">
     <fieldset>
         <legend>单据信息</legend>
         <table width="980" height="120">
@@ -334,10 +319,10 @@
                 <td align="right" style="vertical-align:top">供应商:</td>
                 <td style="vertical-align:top" colspan="3">
                     <select name="supplierId" id="supplierId" style="width:520px">
-                        <option th:each="supplier:${supplierList}"
-                                th:value="${supplier.supplierId}"
-                                th:text="'('+${supplier.supplierCode}+')'+${supplier.supplierName}"
-                        ></option>
+<!--                        <option th:each="supplier:${supplierList}"-->
+<!--                                th:value="${supplier.supplierId}"-->
+<!--                                th:text="'('+${supplier.supplierCode}+')'+${supplier.supplierName}"-->
+<!--                        ></option>-->
                     </select>
                 </td>
 

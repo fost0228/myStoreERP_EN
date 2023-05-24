@@ -306,4 +306,51 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         result.setTotal(this.ordersMapper.saleVOCount(form));
         return result;
     }
+
+    @Override
+    public boolean saleSave(OrdersAddForm ordersAddForm) {
+        //save orders
+        Orders orders = new Orders();
+        BeanUtils.copyProperties(ordersAddForm, orders);
+        Integer count = this.ordersMapper.selectCount(null);
+        orders.setOrderNo(CommonUtils.createOrderNo(count, ordersAddForm.getOrderType()));
+        orders.setEmployeeName("Jack");
+        if (StringUtils.isNotBlank(ordersAddForm.getOrderDate())) {
+            orders.setOrderDate(CommonUtils.parseString2(ordersAddForm.getOrderDate()));
+        } else {
+            orders.setOrderDate(LocalDateTime.now());
+        }
+        int insert = this.ordersMapper.insert(orders);
+        if (insert == 0) return false;
+        //save orderDetail
+        String orderDetailsStr = ordersAddForm.getOrderDetailsStr();
+        String[] split = orderDetailsStr.split("&");
+        for (String orderDetailStr : split) {
+            String[] split1 = orderDetailStr.split(",");
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setMaterialId(Integer.parseInt(split1[0]));
+            orderDetail.setMaterialCode(split1[1]);
+            orderDetail.setMaterialName(split1[2]);
+            orderDetail.setStyle(split1[3]);
+            orderDetail.setUnitName(split1[4]);
+            orderDetail.setOrderId(split1[5]);
+            orderDetail.setBatchNo(split1[6]);
+            orderDetail.setOrderFlag(split1[8]);
+            if (orderDetail.getOrderFlag().equals("冲红")) {
+                orderDetail.setOrderCount(new BigDecimal("-" + split1[7]));
+            } else {
+                orderDetail.setOrderCount(new BigDecimal(split1[7]));
+                BigDecimal orderCount = this.orderDetailMapper.getOrderCount(split1[6], 1);
+                BigDecimal subtract = orderCount.subtract(new BigDecimal(split1[7]));
+                int i = this.orderDetailMapper.updateOrderCount(subtract, split1[6], 1);
+                if(i == 0) return false;
+            }
+            orderDetail.setStorageId(Integer.parseInt(split1[9]));
+            orderDetail.setStorageName(split1[10]);
+            orderDetail.setOrderNo(orders.getOrderNo());
+            int insert1 = this.orderDetailMapper.insert(orderDetail);
+            if (insert1 == 0) return false;
+        }
+        return true;
+    }
 }

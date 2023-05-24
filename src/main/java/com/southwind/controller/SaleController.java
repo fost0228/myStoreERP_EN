@@ -1,5 +1,6 @@
 package com.southwind.controller;
 
+import com.southwind.form.OrdersAddForm;
 import com.southwind.form.OrdersSearchForm;
 import com.southwind.service.OrdersService;
 import com.southwind.service.SupplierService;
@@ -7,7 +8,10 @@ import com.southwind.util.PageObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @author jiangH
@@ -28,5 +32,27 @@ public class SaleController {
         model.addAttribute("ordersForm", form);
         model.addAttribute("supplierList", this.supplierService.list());
         return "saleList";
+    }
+
+    @GetMapping("/init")
+    public String init(Model model){
+        model.addAttribute("supplierList", this.supplierService.list());
+        return "saleAdd";
+    }
+
+    @PostMapping("/save")
+    @ResponseBody
+    public String save(OrdersAddForm ordersAddForm){
+        boolean save = this.ordersService.saleSave(ordersAddForm);
+        if(save) return "success";
+        return "fail";
+    }
+
+    @PostMapping("/return")
+    @ResponseBody
+    public String ordersReturn(OrdersAddForm ordersAddForm){
+        boolean ordersReturn = this.ordersService.ordersReturn(ordersAddForm);
+        if(ordersReturn) return "success";
+        return "fail";
     }
 }
