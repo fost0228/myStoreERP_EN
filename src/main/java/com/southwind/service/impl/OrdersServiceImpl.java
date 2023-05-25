@@ -353,4 +353,17 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         }
         return true;
     }
+
+    @Override
+    public PageObject saleReturnList(PageObject pageObject, OrdersSearchForm form) {
+        Long index = (pageObject.getCurrent() - 1) * pageObject.getSize();
+        Long length = pageObject.getSize();
+        List<OrdersVO> ordersVOList = this.ordersMapper.saleReturnVOList(index, length, form);
+        PageObject result = new PageObject();
+        result.setData(ordersVOList);
+        result.setSize(pageObject.getSize());
+        result.setCurrent(pageObject.getCurrent());
+        result.setTotal(this.ordersMapper.saleReturnVOCount(form));
+        return result;
+    }
 }

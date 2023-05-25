@@ -30,4 +30,6 @@ public interface OrdersMapper extends BaseMapper<Orders> {
     public int batchInvalid(OrdersMO ordersMO);
     public List<OrdersVO> saleVOList(Long index, Long length, OrdersSearchForm form);
     public Long saleVOCount(OrdersSearchForm form);
+    public List<OrdersVO> saleReturnVOList(Long index, Long length, OrdersSearchForm form);
+    public Long saleReturnVOCount(OrdersSearchForm form);
 }
