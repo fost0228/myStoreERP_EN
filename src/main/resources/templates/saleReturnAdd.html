@@ -42,7 +42,7 @@
                     });
                     //加载仓库下拉框的数据
                     $.get(
-                        "/sale/storageList",
+                        "/orders/storageList",
                         function(data){
                             $(storageName.target).combogrid('grid').datagrid('loadData', data);
                         },
@@ -156,7 +156,7 @@
                 });
                 //加载仓库下拉框的数据
                 $.get(
-                    "/sale/storageList",
+                    "/orders/storageList",
                     function(data){
                         $(storageName.target).combogrid('grid').datagrid('loadData', data);
                     },
@@ -232,9 +232,7 @@
         }
 
         let str = "";
-        let batchNoStr = "";
-        let orderCountStr = "";
-        let flag = false;
+
         for(let i = 0;i < rows.length;i++)
         {
             if(rows[i].orderFlag == '正常') flag = true;
@@ -245,21 +243,33 @@
                 return false;
             }
 
-            batchNoStr += rows[i].batchNo + ","
-            orderCountStr += rows[i].orderCount + ","
-
-            str +=
-                rows[i].materialId + ","
-                + rows[i].materialCode + ","
-                + rows[i].materialName + ","
-                + rows[i].style + ","
-                + rows[i].materialUnit + ","
-                + rows[i].orderId + ","
-                + rows[i].batchNo + ","
-                + rows[i].orderCount + ","
-                + rows[i].orderFlag + ","
-                + rows[i].storageId + ","
-                + rows[i].storageName + "&"
+            if(i == rows.length -1){
+                str +=
+                    rows[i].materialId + ","
+                    + rows[i].materialCode + ","
+                    + rows[i].materialName + ","
+                    + rows[i].style + ","
+                    + rows[i].materialUnit + ","
+                    + rows[i].orderId + ","
+                    + rows[i].batchNo + ","
+                    + rows[i].orderCount + ","
+                    + rows[i].orderFlag + ","
+                    + rows[i].storageId + ","
+                    + rows[i].storageName
+            }else{
+                str +=
+                    rows[i].materialId + ","
+                    + rows[i].materialCode + ","
+                    + rows[i].materialName + ","
+                    + rows[i].style + ","
+                    + rows[i].materialUnit + ","
+                    + rows[i].orderId + ","
+                    + rows[i].batchNo + ","
+                    + rows[i].orderCount + ","
+                    + rows[i].orderFlag + ","
+                    + rows[i].storageId + ","
+                    + rows[i].storageName + "&"
+            }
         }
 
         let orderObj = {

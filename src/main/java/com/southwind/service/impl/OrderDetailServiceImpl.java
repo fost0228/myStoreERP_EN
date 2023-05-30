@@ -64,4 +64,10 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
 
         return this.orderDetailMapper.orderDetailList();
     }
+
+    @Override
+    public List<OrderDetail> saleReturnOrdersDetailList() {
+        return this.orderDetailMapper.saleReturnOrdersDetailList();
+
+    }
 }

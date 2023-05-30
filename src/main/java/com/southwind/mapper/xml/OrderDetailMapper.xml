@@ -20,7 +20,11 @@
     </select>
 
     <select id="orderDetailList" resultType="com.southwind.entity.OrderDetail">
-        select od.order_id, od.batch_no, od.order_count, od.material_id, od.material_name, od.material_code, od.style, od.unit_name from orders o, order_detail od where o.order_no = od.order_no and od.order_count > 0 and o.order_type = 1
+        select od.order_id, od.batch_no, od.order_count, od.material_id, od.material_name, od.material_code, od.style, od.unit_name from orders o, order_detail od where o.order_no = od.order_no and od.order_count > 0 and o.order_type = 1 and o.invalid = 1 and o.status = 0
+    </select>
+
+    <select id="saleReturnOrdersDetailList" resultType="com.southwind.entity.OrderDetail">
+        select od.order_no, od.order_id,od.batch_no, od.order_count, od.material_id, od.material_name, od.material_code, od.style, od.unit_name from orders o, order_detail od where o.order_no = od.order_no and od.order_count > 0 and o.order_type = 3 and o.invalid = 1 and o.status = 0
     </select>
 
     <select id="updateOrderCount">

@@ -78,6 +78,6 @@ public class SaleController {
     @GetMapping("/saleReturnOrdersDetailList")
     @ResponseBody
     public List<OrderDetail> saleReturnOrdersDetailList(){
-        return this.orderDetailService.orderDetailList();
+        return this.orderDetailService.saleReturnOrdersDetailList();
     }
 }

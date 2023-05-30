@@ -20,6 +20,8 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
     public int batchDelete(OrdersMO ordersMO);
     public int checkBatchNo(OrderDetailMO orderDetailMO);
     public List<OrderDetail> orderDetailList();
+    public List<OrderDetail> saleReturnOrdersDetailList();
     public int updateOrderCount(BigDecimal count, String batchNo, Integer orderType);
     public BigDecimal getOrderCount(String batchNo, Integer orderType);
+
 }

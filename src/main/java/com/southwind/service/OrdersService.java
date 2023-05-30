@@ -33,5 +33,5 @@ public interface OrdersService extends IService<Orders> {
     public PageObject saleList(PageObject pageObject, OrdersSearchForm form);
     public boolean saleSave(OrdersAddForm ordersAddForm);
     public PageObject saleReturnList(PageObject pageObject, OrdersSearchForm form);
-
+    public boolean saleReturn(OrdersAddForm ordersAddForm);
 }
