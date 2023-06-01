@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <th:block th:include="common.html :: source"></th:block>
+<!--    <link rel="shortcut icon" href="../resources/favicon.ico" th:href="@{/static/favicon.ico}"/>-->
+    <script type="text/javascript">
+        $(function () {
+            var pager = $(".easyui-datagrid").datagrid('getPager');
+            $(pager).pagination({
+                total: parseInt($("#total").val()),
+                pageSize: parseInt($("#size").val()),
+                pageNumber: parseInt($("#current").val()),
+                afterPageText: '页，共{pages}页',
+                pageList: [1, 5, 10, 20, 30, 50],
+                //update method
+                onBeforeRefresh: function (current, size) {
+                    let supplierId = $("#supplierId").val();
+                    let materialName = $("#materialName").val();
+                    let batchNo = $("#batchNo").val();
+                    let status = $("#status").val();
+                    let orderDate1 = $("#orderDate1").val();
+                    let orderDate2 = $("#orderDate2").val();
+                    location.href = "/materialInput/list?current=" + current +
+                        "&size=" + size +
+                        "&supplierId=" + supplierId +
+                        "&materialName=" + materialName +
+                        "&batchNo=" + batchNo +
+                        "&status=" + status +
+                        "&orderDate1=" + orderDate1 +
+                        "&orderDate2=" + orderDate2;
+                },
+                onSelectPage: function (current, size) {
+                    let supplierId = $("#supplierId").val();
+                    let materialName = $("#materialName").val();
+                    let batchNo = $("#batchNo").val();
+                    let status = $("#status").val();
+                    let orderDate1 = $("#orderDate1").val();
+                    let orderDate2 = $("#orderDate2").val();
+                    location.href = "/materialInput/list?current=" + current + "&size=" + size +
+                        "&supplierId=" + supplierId +
+                        "&materialName=" + materialName +
+                        "&batchNo=" + batchNo +
+                        "&status=" + status +
+                        "&orderDate1=" + orderDate1 +
+                        "&orderDate2=" + orderDate2;
+                }
+            });
+        });
+
+
+        function materialImport(){
+            location.href = "materialInput";
+        }
+
+        function materialInputSearch(){
+            document.forms[0].submit();
+        }
+
+        function materialExport(){
+            location.href = "/materialInput/export"
+        }
+
+        function verify(){
+            var rows = $("#dgitem").datagrid("getSelections");
+            if(rows.length <= 0){
+                $.messager.alert("Notice", "Please choose the item needed to be validated！","error");
+                return false;
+            }
+            var idArray = "";
+            for(let i=0; i<rows.length; i++) {
+                let row = rows[i];
+                if (row.status == 'Validated') {
+                    $.messager.alert("Notice", "Can not re-validate items！", "error");
+                    return false;
+                }
+                if (row.status == 'In Storage') {
+                    $.messager.alert("Notice", "Items already in storage，can not validate！", "error");
+                    return false;
+                }
+                if((i+1) != rows.length){
+                    idArray += row.id+",";
+                }else{
+                    idArray += row.id;
+                }
+            }
+
+            $.messager.confirm('Notice','data can not be changed after validation，please confirm',function(res){
+
+                if(res){
+                    $.post(
+                        "/materialInput/verify?status=1&idArray="+idArray,
+                        function (data) {
+                            if(data == "success"){
+                                $.messager.alert("Notice", "validate success！","info",function () {
+                                    window.location.href = "/materialInput/list";
+                                });
+                            }else{
+                                $.messager.alert("Notice", "validate fail！","error");
+                            }
+                        }
+                    );
+                }
+
+            })
+        }
+
+        function inStorage(){
+            var rows = $("#dgitem").datagrid("getSelections");
+            if(rows.length <= 0){
+                $.messager.alert("操作提示", "Please choose！","error");
+                return false;
+            }
+            var idArray = "";
+            var supplierName = "";
+            for(let i=0; i<rows.length; i++){
+                let row = rows[i];
+                if(row.status == 'Not validate'){
+                    $.messager.alert("Notice", "Includes not validated order，please validate first！","error");
+                    return false;
+                }
+                if(row.status == 'In Storage'){
+                    $.messager.alert("Notice", "Already in storage，cannot re-in storage！","error");
+                    return false;
+                }
+
+                if(supplierName !='' && supplierName != row.supplierName){
+                    $.messager.alert("Notice", "一笔入库单只能选择同一个供应商的订单！","error");
+                    return false;
+                }
+
+                // supplierName = row.supplierName;
+
+                if((i+1) != rows.length){
+                    idArray += row.id+",";
+                }else{
+                    idArray += row.id;
+                }
+            }
+
+            $.messager.confirm('提示','确认入库？',function(res){
+                if(res){
+                    $.post(
+                        "/materialInput/verify?status=2&idArray="+idArray,
+                        function (data) {
+                            if(data == "success"){
+                                $.messager.alert("操作提示", "Success！","info",function () {
+                                    window.location.href = "/materialInput/list";
+                                });
+                            }else{
+                                $.messager.alert("操作提示", "Fail！","error");
+                            }
+                        }
+                    );
+                }
+            })
+        }
+
+        function del(){
+            var rows = $("#dgitem").datagrid("getSelections");
+            if (rows.length <= 0) {
+                $.messager.alert("操作提示", "请选择要删除的数据！", "error");
+                return false;
+            }
+            var idArray = "";
+            for (let i = 0; i < rows.length; i++) {
+                let row = rows[i];
+                if (row.status == 'Validated') {
+                    $.messager.alert("操作提示", "包含已审核的订单，无法删除！", "error");
+                    return false;
+                }
+                if (row.status == 'In Storage') {
+                    $.messager.alert("操作提示", "包含已入库的订单，无法删除！", "error");
+                    return false;
+                }
+                if ((i + 1) != rows.length) {
+                    idArray += row.id + ",";
+                } else {
+                    idArray += row.id;
+                }
+            }
+
+            $.messager.confirm('提示','确认删除？',function(res){
+                if(res){
+                    $.post(
+                        "/materialInput/delete?idArray="+idArray,
+                        function (data) {
+                            if(data == "success"){
+                                $.messager.alert("操作提示", "删除成功！","info",function () {
+                                    window.location.href = "/materialInput/list";
+                                });
+                            }else{
+                                $.messager.alert("操作提示", "删除失败！","error");
+                            }
+                        }
+                    );
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+<table width="100%" border="0">
+    <tr>
+        <td>
+            <a class="easyui-linkbutton" plain="true" icon="icon-add" href="javascript:void(0);" onclick="materialImport()">Import</a>
+            <a class="easyui-linkbutton" plain="true" icon="icon-undo" href="javascript:void(0);" onclick="materialExport()">Export</a>
+            <a class="easyui-linkbutton" plain="true" icon="icon-edit" href="javascript:void(0);" onclick="verify()">Validate</a>
+            <a class="easyui-linkbutton" plain="true" icon="icon-edit" href="javascript:void(0);" onclick="inStorage()">Enter Storage</a>
+            <a class="easyui-linkbutton" plain="true" icon="icon-cut" href="javascript:void(0);" onclick="del()">Delete</a>
+        </td>
+        <td align="right">
+            <form id="form1" modelAttribute="enrollment" action="/materialInput/list" method="post">
+                Supplier: <select th:value="${form.supplierId}" id="supplierId" name="supplierId">
+                <option value="">None</option>
+                <option
+                        th:each="supplier:${supplierList}"
+                        th:value="${supplier.supplierId}"
+                        th:text="${supplier.supplierName}"
+                        th:selected="${form.supplierId== supplier.supplierId}"
+                ></option>
+            </select>
+                Material: <input th:value="${form.materialName}" type="text" id="materialName" name="materialName" style="width:110px;">
+                Batch No.: <input th:value="${form.batchNo}" type="text" id="batchNo" name="batchNo" style="width:110px;">
+                Status：
+                <select th:value="${form.status}" name="status" id="status">
+                    <option value="" th:selected="${form.status == ''}">None</option>
+                    <option value="0" th:selected="${form.status == 0}">Not Validate</option>
+                    <option value="1" th:selected="${form.status == 1}">Validated</option>
+                    <option value="2" th:selected="${form.status == 2}">In storage</option>
+                </select>
+                日期:<input th:value="${form.orderDate1}" class="easyui-datebox" id="orderDate" name="orderDate1" editable="false"
+                          style="width:130px;">
+                -<input th:value="${form.orderDate2}" class="easyui-datebox" id="orderDate2" name="orderDate2" editable="false"
+                        style="width:130px;">
+                <a href="javascript:void(0);" class="easyui-linkbutton" plain="true" onclick="materialInputSearch()"
+                   iconCls="icon-search">搜索</a>
+            </form>
+        </td>
+    </tr>
+</table>
+</div>
+<input type="hidden" id="current" th:value="${page.current}"/>
+<input type="hidden" id="size" th:value="${page.size}"/>
+<input type="hidden" id="total" th:value="${page.total}"/>
+<table class="easyui-datagrid" id="dgitem" pagination="true" style="height:550px;width: auto;" singleSelect="false">
+    <thead>
+    <tr>
+        <th width="50" align="center" checkbox="true" field="id" >Choose</th>
+        <th width="150" align="center" field="supplierName">Supplier</th>
+        <th width="120" align="center" field="oprDate">Delivery Date</th>
+        <th width="100" align="center" field="storageName">Storage</th>
+        <th width="60" align="center" field="materialCode">Material ID</th>
+        <th width="100" align="center" field="materialName">Material Name</th>
+        <th width="60" align="center" field="style">Models</th>
+        <th width="60" align="center" field="unitName">Unit</th>
+        <th width="90" align="center" field="orderId">Order No</th>
+        <th width="130" align="center" field="batchNo">Production No</th>
+        <th width="60" align="center" field="orderCnt">Count</th>
+        <th width="80" align="center" field="status">Status</th>
+        <th width="150" align="center" field="orderNo">Entry No</th>
+        <th width="80" align="center" field="userName">Operator</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr th:each="materialInput:${page.data}">
+            <td th:text="${materialInput.materialInputId}"></td>
+            <td th:text="${materialInput.supplierName}"></td>
+            <td th:text="${materialInput.orderDate}"></td>
+            <td th:text="${materialInput.storageName}"></td>
+            <td th:text="${materialInput.materialCode}"></td>
+            <td th:text="${materialInput.materialName}"></td>
+            <td th:text="${materialInput.style}"></td>
+            <td th:text="${materialInput.unitName}"></td>
+            <td th:text="${materialInput.orderId}"></td>
+            <td th:text="${materialInput.batchNo}"></td>
+            <td th:text="${materialInput.orderCount}"></td>
+<!--                    <td th:text="${materialInput.status}"></td>-->
+            <td th:if="${materialInput.status == 0}">Not Validated</td>
+            <td th:if="${materialInput.status == 1}">Validated</td>
+            <td th:if="${materialInput.status == 2}">In Storage</td>
+            <td th:text="${materialInput.orderNo}"></td>
+            <td th:text="${materialInput.userName}"></td>
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>

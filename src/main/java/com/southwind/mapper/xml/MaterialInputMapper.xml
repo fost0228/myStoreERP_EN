@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.southwind.mapper.MaterialInputMapper">
+    <update id="verify" parameterType="com.southwind.mo.MaterialInputMO">
+        update material_input set status = #{status}
+        <where>
+            <foreach collection="ids" open="material_input_id in (" close=")" item="id" separator=",">
+                #{id}
+            </foreach>
+        </where>
+    </update>
+</mapper>

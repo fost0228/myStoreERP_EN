@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <th:block th:include="common.html :: source"></th:block>
+    <link rel="shortcut icon" href="../resources/favicon.ico" th:href="@{/static/favicon.ico}"/>
+</head>
+<body style="margin-left: 20px;margin-top: 10px;">
+<form name="form1" action="/materialInput/import" method="post" enctype="multipart/form-data"
+      onsubmit="return check();">
+    <table width="100%" class="table table-celled">
+        <tr height="40">
+            <td><font color="red" size="3"><b>只支持扩展名为.xls和.xlsx的Excel文件，只有检查验证合格才能导入数据，导入可能要一些时间，请耐心等待</b></font></td>
+        </tr>
+        <tr height="40">
+            <td>Please choose file:<input type="file" name="file" id="file" style="width:300px" label='File'/>&nbsp;&nbsp;&nbsp;&nbsp;<a
+                    href="/excel/materialInput.xls"><b>Download template</b></a></td>
+        </tr>
+        <tr height="40">
+            <td><input type="submit" class="easyui-linkbutton " value="Submit">
+            <td><input type="submit" class="easyui-linkbutton " value="Export">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="button" class="easyui-linkbutton " onclick="back()" value="Exit"></td>
+        </tr>
+    </table>
+</form>
+<br/>
+<font size="3" color="red"><b>
+    Notice：<br/>
+    <hr color="red"/>
+    1.Please download template and input information<br/>
+    2.File must be closed when importing; <br/>
+</b></font>
+
+<center>
+    <font color="red" size="4">Import Result:</font><br/><br/>
+    <font color="red" size="4" th:text="${errorMsg}"></font>
+</center>
+</body>
+</html>
