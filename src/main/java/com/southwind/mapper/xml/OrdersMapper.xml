@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.southwind.mapper.OrdersMapper">
-
+    <select id="reportList" resultType="ReportVO">
+        select o.order_no, o.order_type, s.supplier_name,o.employee_name, o.order_date, od.material_code, od.material_name, od.batch_no, od.order_id, od.storage_name, od.order_count, od.order_flag from orders o, order_detail od, supplier s where o.order_no = od.order_no and s.supplier_id =  o.supplier_id
+    </select>
 </mapper>
