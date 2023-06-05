@@ -5,8 +5,10 @@ import com.southwind.entity.Orders;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.southwind.form.MaterialInputSearchForm;
 import com.southwind.form.OrdersSearchForm;
+import com.southwind.form.ReportForm;
 import com.southwind.mo.OrdersMO;
 import com.southwind.vo.OrdersVO;
+import com.southwind.vo.ReportVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -32,4 +34,8 @@ public interface OrdersMapper extends BaseMapper<Orders> {
     public Long saleVOCount(OrdersSearchForm form);
     public List<OrdersVO> saleReturnVOList(Long index, Long length, OrdersSearchForm form);
     public Long saleReturnVOCount(OrdersSearchForm form);
+    public List<ReportVO> reportList(Long index, Long length, ReportForm form);
+    public Long reportCount(ReportForm form);
+    public List<ReportVO> reportExportList();
+
 }

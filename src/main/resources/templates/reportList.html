@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>仓库明细报表</title>
+    <th:block th:include="common.html :: source"></th:block>
+</head>
+<body>
+<script type="text/javascript">
+    $(function(){
+        var pager = $(".easyui-datagrid").datagrid('getPager');
+        $(pager).pagination({
+            total:parseInt($("#total").val()),
+            pageSize:parseInt($("#size").val()),
+            pageNumber:parseInt($("#current").val()),
+            afterPageText: '页，共{pages}页',
+            pageList: [1, 5, 10, 20, 30, 50],
+            //刷新方法
+            onBeforeRefresh:function(current,size){
+                let storeageId = $("#storeageId").val();
+                let orderType = $("#orderType").val();
+                let materialName = $("#materialName").val();
+                let orderDate = $("#orderDate").val();
+                let orderDate2 = $("#orderDate2").val();
+                location.href="/report/list?current=" + current + "&size=" + size + "&storeageId=" + storeageId + "&orderType=" + orderType + "&materialName=" + materialName + "&orderDate=" + orderDate + "&orderDate2=" + orderDate2;
+            },
+            onSelectPage:function(current,size){
+                let storeageId = $("#storeageId").val();
+                let orderType = $("#orderType").val();
+                let materialName = $("#materialName").val();
+                let orderDate = $("#orderDate").val();
+                let orderDate2 = $("#orderDate2").val();
+                location.href="/report/list?current=" + current + "&size=" + size + "&storeageId=" + storeageId + "&orderType=" + orderType + "&materialName=" + materialName + "&orderDate=" + orderDate + "&orderDate2=" + orderDate2;
+            }
+        });
+    });
+
+    function exportReport(){
+        location.href = '/report/export';
+    }
+
+    function ordersSearch() {
+        document.forms[0].submit();
+    }
+</script>
+<form action="/report/list" method="post">
+    <table width="100%" border="0">
+        <tr>
+            <td>
+                <a class="easyui-linkbutton" plain="true" icon="icon-undo" href="javascript:void(0);" onclick="exportReport()">导出</a>
+            </td>
+            <td align="right">
+<!--                仓库:<select name="storageId" id="storageId" th:value="${reportForm.storageId}" style="width:160px">-->
+<!--                <option value="">不选择</option>-->
+<!--                <option th:each="storage:${storageList}"-->
+<!--                        th:value="${storage.storageId}"-->
+<!--                        th:text="${storage.storageName}"-->
+<!--                        th:selected="${reportForm.storageId == storage.storageId}"-->
+                ></option>
+            </select>
+                单据类别:
+                <select name="orderType" id="orderType"  style="width:100px">
+                    <option value="" th:selected="${reportForm.orderType == ''}">不选择</option>
+                    <option value="1" th:selected="${reportForm.orderType == 1}">采购入库单</option>
+                    <option value="2" th:selected="${reportForm.orderType == 2}">采购退货单</option>
+                    <option value="3" th:selected="${reportForm.orderType == 3}">销售出库单</option>
+                    <option value="4" th:selected="${reportForm.orderType == 4}">销售退货单</option>
+                </select>
+                物料名称:<input type="text" name="materialName" th:value="${reportForm.materialName}" id="materialName" style="width:160px">
+                入库日期:<input type="text" class="easyui-datebox" name="orderDate1" th:value="${reportForm.orderDate1}" id="orderDate1" style="width:160px">
+                -<input type="text" class="easyui-datebox" name="orderDate2" th:value="${reportForm.orderDate2}" id="orderDate2"  style="width:160px">
+                <a href="javascript:void(0);" class="easyui-linkbutton" plain="true" onclick="ordersSearch()" iconCls="icon-search" >搜索</a>
+            </td>
+        </tr>
+    </table>
+</form>
+<!--<input type="hidden" id="total" th:value="${page.total}"/>-->
+<!--<input type="hidden" id="size" th:value="${page.size}"/>-->
+<!--<input type="hidden" id="current" th:value="${page.current}"/>-->
+<table class="easyui-datagrid" pagination="true" id="dgitem" style="width:auto;height:420px"  singleSelect="false">
+    <thead>
+    <tr>
+        <th field="orderNo" checkbox="true" >选择</th>
+        <th field="orderNo1" align="center" width="140">单据编号</th>
+        <th field="orderType" align="center" width="70">单据类型</th>
+        <th field="supplierName" align="center" width="150">供应商</th>
+        <th field="employeeName" align="center" width="80">开单人</th>
+        <th field="oprDate" align="center" width="150">开单时间</th>
+        <th field="materialCode" align="center" width="60">物料编码</th>
+        <th field="materialName" align="center" width="80">物料名称</th>
+        <th field="batchNo" align="center" width="140">批号</th>
+        <th field="orderId" align="center" width="140">采购编码</th>
+        <th field="storageName" align="center" width="60">仓库</th>
+        <th field="orderCount" align="center" width="60">数量</th>
+        <th field="orderFlag" align="center" width="60">冲红</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr th:each="orders:${page.data}">
+            <td th:text="${orders.orderNo}"></td>
+            <td th:text="${orders.orderNo}"></td>
+            <td th:if="${orders.orderType==1}">采购入库单</td>
+            <td th:if="${orders.orderType==2}">采购退货单</td>
+            <td th:if="${orders.orderType==3}">销售出库单</td>
+            <td th:if="${orders.orderType==4}">销售退货单</td>
+            <td th:text="${orders.supplierName}"></td>
+            <td th:text="${orders.employeeName}"></td>
+            <td th:text="${orders.orderDate}"></td>
+            <td th:text="${orders.materialCode}"></td>
+            <td th:text="${orders.materialName}"></td>
+            <td th:text="${orders.batchNo}"></td>
+            <td th:text="${orders.orderId}"></td>
+            <td th:text="${orders.storageName}"></td>
+            <td th:text="${orders.orderCount}"></td>
+            <td th:text="${orders.orderFlag}"></td>
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>

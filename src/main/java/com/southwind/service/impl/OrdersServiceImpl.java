@@ -6,6 +6,7 @@ import com.southwind.entity.Orders;
 import com.southwind.entity.Supplier;
 import com.southwind.form.OrdersAddForm;
 import com.southwind.form.OrdersSearchForm;
+import com.southwind.form.ReportForm;
 import com.southwind.mapper.OrderDetailMapper;
 import com.southwind.mapper.OrdersMapper;
 import com.southwind.mapper.SupplierMapper;
@@ -15,6 +16,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.southwind.util.CommonUtils;
 import com.southwind.util.PageObject;
 import com.southwind.vo.OrdersVO;
+import com.southwind.vo.ReportVO;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -414,4 +416,31 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         }
         return true;
     }
+
+
+
+    @Override
+    public PageObject reportList(PageObject pageObject, ReportForm form) {
+        Long index = (pageObject.getCurrent() - 1) * pageObject.getSize();
+        Long length = pageObject.getSize();
+        List<ReportVO> reportVOS = this.ordersMapper.reportList(index, length, form);
+        PageObject result = new PageObject();
+        result.setData(reportVOS);
+        result.setSize(pageObject.getSize());
+        result.setCurrent(pageObject.getCurrent());
+        result.setTotal(this.ordersMapper.reportCount(form));
+        return result;
+    }
+
+    @Override
+    public List<ReportVO> reportList() {
+        return this.ordersMapper.reportExportList();
+    }
+
+    @Override
+    public Long reportCount() {
+        return null;
+    }
+
+
 }

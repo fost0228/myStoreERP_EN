@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.southwind.form.MaterialInputSearchForm;
 import com.southwind.form.OrdersAddForm;
 import com.southwind.form.OrdersSearchForm;
+import com.southwind.form.ReportForm;
 import com.southwind.util.PageObject;
 import com.southwind.vo.OrdersVO;
+import com.southwind.vo.ReportVO;
 
 import java.util.List;
 
@@ -34,4 +36,7 @@ public interface OrdersService extends IService<Orders> {
     public boolean saleSave(OrdersAddForm ordersAddForm);
     public PageObject saleReturnList(PageObject pageObject, OrdersSearchForm form);
     public boolean saleReturn(OrdersAddForm ordersAddForm);
+    public PageObject reportList(PageObject pageObject,  ReportForm form);
+    public Long reportCount();
+    public List<ReportVO> reportList();
 }
